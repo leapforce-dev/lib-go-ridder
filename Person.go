@@ -1,0 +1,11 @@
+package ridder
+
+type Person struct {
+	FirstName string `json:"FirstName"`
+	LastName  string `json:"LastName"`
+	Prefix    string `json:"Prefix"`
+	Title     int64  `json:"Title"`
+	Initials  string `json:"Initials"`
+	Gender    int64  `json:"Gender"`
+	Deceased  bool   `json:"Deceased"`
+}

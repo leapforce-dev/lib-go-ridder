@@ -1,15 +1,20 @@
 package ridder
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	utilities "github.com/leapforce-libraries/go_utilities"
+)
+
+const (
+	MaxLengthOrganizationName int = 60
+	MaxLengthOpportunityName  int = 80
 )
 
 // type
@@ -58,11 +63,17 @@ func NewRidder(config RidderConfig) (*Ridder, *errortools.Error) {
 
 // generic Get method
 //
-func (r *Ridder) Get(urlPath string, model interface{}) *errortools.Error {
-	return r.httpRequest(http.MethodGet, urlPath, nil, model)
+func (r *Ridder) Get(urlPath string, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	return r.httpRequest(http.MethodGet, urlPath, nil, responseModel)
 }
 
-func (r *Ridder) httpRequest(httpMethod string, urlPath string, body io.Reader, model interface{}) *errortools.Error {
+// generic Post method
+//
+func (r *Ridder) Post(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	return r.httpRequest(http.MethodPost, urlPath, bodyModel, responseModel)
+}
+
+func (r *Ridder) httpRequest(httpMethod string, urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
 	client := new(http.Client)
 
 	url := fmt.Sprintf("%s/%s", r.apiURL, urlPath)
@@ -70,19 +81,41 @@ func (r *Ridder) httpRequest(httpMethod string, urlPath string, body io.Reader, 
 
 	e := new(errortools.Error)
 
-	request, err := http.NewRequest(httpMethod, url, body)
+	buffer := new(bytes.Buffer)
+	buffer = nil
+
+	if bodyModel != nil {
+
+		b, err := json.Marshal(bodyModel)
+		if err != nil {
+			e.SetMessage(err)
+			return nil, nil, e
+		}
+		fmt.Println(string(b))
+		buffer = bytes.NewBuffer(b)
+	}
+
+	request, err := func() (*http.Request, error) {
+		// function necessary because a Buffer nil pointer differs from a nil value
+		if buffer == nil {
+			return http.NewRequest(httpMethod, url, nil)
+		}
+		return http.NewRequest(httpMethod, url, buffer)
+	}()
+
 	e.SetRequest(request)
+
 	if err != nil {
 		e.SetMessage(err)
-		return e
+		return request, nil, e
 	}
 
 	// Add authorization token to header
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("X-ApiKey", r.apiKey)
 
-	if body != nil {
-		request.Header.Set("Content-Type", "application/json")
+	if bodyModel != nil {
+		request.Header.Set("Content-Type", "application/json-patch+json")
 	}
 
 	// Send out the HTTP request
@@ -103,36 +136,50 @@ func (r *Ridder) httpRequest(httpMethod string, urlPath string, body io.Reader, 
 
 			e.SetMessage(fmt.Sprintf("Server returned statuscode %v", response.StatusCode))
 		}
-	}
 
-	defer response.Body.Close()
+		if response.Body != nil {
 
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		e.SetMessage(err)
-		return e
-	}
+			defer response.Body.Close()
 
-	if e != nil {
-		errorString := ""
+			b, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				e.SetMessage(err)
+				return request, response, e
+			}
 
-		err2 := json.Unmarshal(b, &errorString)
-		errortools.CaptureInfo(err2)
+			if e != nil {
+				// try to unmarshal to ErrorResponse
+				errorResponse := ErrorResponse{}
+				errError := json.Unmarshal(b, &errorResponse)
 
-		if errorString != "" {
-			e.SetMessage(errorString)
+				if errError == nil {
+					if errorResponse.Error != "" {
+						e.SetMessage(errorResponse.Error)
+					}
+				} else {
+					// try to unmarshal to string
+					errorString := ""
+					errError = json.Unmarshal(b, &errorString)
+
+					if errorString != "" {
+						e.SetMessage(errorString)
+					}
+				}
+
+				errortools.CaptureInfo(errError)
+
+				return request, response, e
+			}
+
+			if responseModel != nil {
+				err = json.Unmarshal(b, &responseModel)
+				if err != nil {
+					e.SetMessage(err)
+					return request, response, e
+				}
+			}
 		}
-
-		return e
 	}
 
-	if model != nil {
-		err = json.Unmarshal(b, &model)
-		if err != nil {
-			e.SetMessage(err)
-			return e
-		}
-	}
-
-	return nil
+	return request, response, e
 }
