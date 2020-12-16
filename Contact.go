@@ -7,8 +7,8 @@ import (
 )
 
 type Contact struct {
-	RidderID             int64  `json:"RidderId"`
-	InsightlyID          int64  `json:"InsightlyId"`
+	RidderID             int32  `json:"RidderId"`
+	InsightlyID          int32  `json:"InsightlyId"`
 	Person               Person `json:"Person"`
 	Email                string `json:"Email"`
 	Cellphone            string `json:"Cellphone"`
@@ -20,10 +20,10 @@ type Contact struct {
 	MainContactInvoice   bool   `json:"MainContactInvoice"`
 	FunctionName         string `json:"FunctionName"`
 	EmploymentTerminated bool   `json:"EmploymentTerminated"`
-	OrganizationID       int64  `json:"OrganizationId"`
+	OrganizationID       int32  `json:"OrganizationId"`
 }
 
-func (r *Ridder) GetContact(ridderID int64) (*Contact, *errortools.Error) {
+func (r *Ridder) GetContact(ridderID int32) (*Contact, *errortools.Error) {
 	url := fmt.Sprintf("contacts?ridderid=%v", ridderID)
 
 	contact := Contact{}
@@ -32,19 +32,20 @@ func (r *Ridder) GetContact(ridderID int64) (*Contact, *errortools.Error) {
 	return &contact, e
 }
 
-func (r *Ridder) UpdateContact(ridderID int64, contact *Contact) *errortools.Error {
+func (r *Ridder) UpdateContact(ridderID int32, contact *Contact) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("contacts/%v", ridderID)
 
-	_, _, e := r.Post(url, &contact, nil)
+	contactID := new(int32)
+	_, _, e := r.Post(url, &contact, &contactID)
 
-	return e
+	return contactID, e
 }
 
-func (r *Ridder) CreateContact(ridderID int64, newContact *Contact) (*Contact, *errortools.Error) {
+func (r *Ridder) CreateContact(newContact *Contact) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("contacts")
 
-	contact := Contact{}
-	_, _, e := r.Post(url, &newContact, &contact)
+	contactID := new(int32)
+	_, _, e := r.Post(url, &newContact, &contactID)
 
-	return &contact, e
+	return contactID, e
 }

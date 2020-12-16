@@ -91,7 +91,7 @@ func (r *Ridder) httpRequest(httpMethod string, urlPath string, bodyModel interf
 			e.SetMessage(err)
 			return nil, nil, e
 		}
-		fmt.Println(string(b))
+		fmt.Println(string(b)) //temp
 		buffer = bytes.NewBuffer(b)
 	}
 

@@ -7,20 +7,20 @@ import (
 )
 
 type Opportunity struct {
-	RidderID           int64   `json:"RidderId"`
-	InsightlyID        int64   `json:"InsightlyId"`
+	RidderID           int32   `json:"RidderId"`
+	InsightlyID        int32   `json:"InsightlyId"`
 	InsightlyState     string  `json:"InsightlyState"`
-	OfferNumber        int64   `json:"OfferNumber"`
+	OfferNumber        int32   `json:"OfferNumber"`
 	OpportunityName    string  `json:"OpportunityName"`
-	OrganizationID     int64   `json:"OrganizationId"`
-	ContactID          int64   `json:"ContactId"`
+	OrganizationID     int32   `json:"OrganizationId"`
+	ContactID          int32   `json:"ContactId"`
 	Currency           string  `json:"Currency"`
 	OpportunityCreated *string `json:"OpportunityCreated"`
 	ForecastCloseDate  *string `json:"ForecastCloseDate"`
-	SalesPerson        int64   `json:"SalesPerson"`
+	SalesPerson        int32   `json:"SalesPerson"`
 }
 
-func (r *Ridder) GetOpportunity(ridderID int64) (*Opportunity, *errortools.Error) {
+func (r *Ridder) GetOpportunity(ridderID int32) (*Opportunity, *errortools.Error) {
 	url := fmt.Sprintf("opportunities?ridderid=%v", ridderID)
 
 	opportunity := Opportunity{}
@@ -29,7 +29,7 @@ func (r *Ridder) GetOpportunity(ridderID int64) (*Opportunity, *errortools.Error
 	return &opportunity, e
 }
 
-func (r *Ridder) UpdateOpportunity(ridderID int64, opportunity *Opportunity) *errortools.Error {
+func (r *Ridder) UpdateOpportunity(ridderID int32, opportunity *Opportunity) *errortools.Error {
 	url := fmt.Sprintf("opportunities/%v", ridderID)
 
 	if opportunity == nil {
@@ -49,7 +49,7 @@ func (r *Ridder) UpdateOpportunity(ridderID int64, opportunity *Opportunity) *er
 	return e
 }
 
-func (r *Ridder) CreateOpportunity(ridderID int64, newOpportunity *Opportunity) (*Opportunity, *errortools.Error) {
+func (r *Ridder) CreateOpportunity(ridderID int32, newOpportunity *Opportunity) (*Opportunity, *errortools.Error) {
 	url := fmt.Sprintf("opportunities")
 
 	if newOpportunity == nil {

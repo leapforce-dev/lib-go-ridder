@@ -7,19 +7,19 @@ import (
 )
 
 type Organization struct {
-	RidderID         int64   `json:"RidderId"`
-	InsightlyID      int64   `json:"InsightlyId"`
+	RidderID         int32   `json:"RidderId"`
+	InsightlyID      int32   `json:"InsightlyId"`
 	OrganizationName string  `json:"OrganizationName"`
 	Phone            string  `json:"Phone"`
 	Website          string  `json:"Website"`
 	EmailAddress     string  `json:"EmailAddress"`
-	AccountManager   *int64  `json:"SalesPerson"`
+	AccountManager   int32   `json:"SalesPerson"`
 	BillingAddress   Address `json:"BillingAddress"`
 	ShippingAddress  Address `json:"ShippingAddress"`
 	Expired          bool    `json:"Expired"`
 }
 
-func (r *Ridder) GetOrganization(ridderID int64) (*Organization, *errortools.Error) {
+func (r *Ridder) GetOrganization(ridderID int32) (*Organization, *errortools.Error) {
 	url := fmt.Sprintf("organizations?ridderid=%v", ridderID)
 
 	organization := Organization{}
@@ -28,16 +28,17 @@ func (r *Ridder) GetOrganization(ridderID int64) (*Organization, *errortools.Err
 	return &organization, e
 }
 
-func (r *Ridder) UpdateOrganization(ridderID int64, organization *Organization) *errortools.Error {
+func (r *Ridder) UpdateOrganization(ridderID int32, organization *Organization) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("organizations/%v", ridderID)
 
 	if organization == nil {
-		return nil
+		return nil, nil
 	}
 
 	ev := organization.validate()
 
-	req, res, e := r.Post(url, &organization, nil)
+	organizationID := new(int32)
+	req, res, e := r.Post(url, &organization, organizationID)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -45,10 +46,10 @@ func (r *Ridder) UpdateOrganization(ridderID int64, organization *Organization) 
 		errortools.CaptureWarning(ev)
 	}
 
-	return e
+	return organizationID, e
 }
 
-func (r *Ridder) CreateOrganization(ridderID int64, newOrganization *Organization) (*Organization, *errortools.Error) {
+func (r *Ridder) CreateOrganization(newOrganization *Organization) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("organizations")
 
 	if newOrganization == nil {
@@ -57,8 +58,8 @@ func (r *Ridder) CreateOrganization(ridderID int64, newOrganization *Organizatio
 
 	ev := newOrganization.validate()
 
-	organization := Organization{}
-	req, res, e := r.Post(url, &newOrganization, &organization)
+	organizationID := new(int32)
+	req, res, e := r.Post(url, &newOrganization, organizationID)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -66,7 +67,7 @@ func (r *Ridder) CreateOrganization(ridderID int64, newOrganization *Organizatio
 		errortools.CaptureWarning(ev)
 	}
 
-	return &organization, e
+	return organizationID, e
 }
 
 func (organization *Organization) validate() *errortools.Error {
