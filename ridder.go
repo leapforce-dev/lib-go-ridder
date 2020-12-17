@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	MaxLengthOrganizationName int = 60
-	MaxLengthOpportunityName  int = 80
+	MaxLengthOrganizationName int    = 60
+	MaxLengthOpportunityName  int    = 80
+	DateTimeFormat            string = "2006-01-02T15:04:05"
 )
 
 // type

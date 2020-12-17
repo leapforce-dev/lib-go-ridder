@@ -32,8 +32,8 @@ func (r *Ridder) GetContact(ridderID int32) (*Contact, *errortools.Error) {
 	return &contact, e
 }
 
-func (r *Ridder) UpdateContact(ridderID int32, contact *Contact) (*int32, *errortools.Error) {
-	url := fmt.Sprintf("contacts/%v", ridderID)
+func (r *Ridder) UpdateContact(contact *Contact) (*int32, *errortools.Error) {
+	url := fmt.Sprintf("contacts/%v", contact.RidderID)
 
 	contactID := new(int32)
 	_, _, e := r.Post(url, &contact, &contactID)

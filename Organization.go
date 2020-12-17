@@ -28,8 +28,8 @@ func (r *Ridder) GetOrganization(ridderID int32) (*Organization, *errortools.Err
 	return &organization, e
 }
 
-func (r *Ridder) UpdateOrganization(ridderID int32, organization *Organization) (*int32, *errortools.Error) {
-	url := fmt.Sprintf("organizations/%v", ridderID)
+func (r *Ridder) UpdateOrganization(organization *Organization) (*int32, *errortools.Error) {
+	url := fmt.Sprintf("organizations/%v", organization.RidderID)
 
 	if organization == nil {
 		return nil, nil
