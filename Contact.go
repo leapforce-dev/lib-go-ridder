@@ -17,7 +17,6 @@ type Contact struct {
 	MainContact          bool   `json:"MainContact"`
 	MainContactCreditor  bool   `json:"MainContactCreditor"`
 	MainContactDebtor    bool   `json:"MainContactDebtor"`
-	MainContactInvoice   bool   `json:"MainContactInvoice"`
 	FunctionName         string `json:"FunctionName"`
 	EmploymentTerminated bool   `json:"EmploymentTerminated"`
 	OrganizationID       int32  `json:"OrganizationId"`
