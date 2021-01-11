@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 )
@@ -36,16 +37,16 @@ type OpportunityResponse struct {
 	OfferNumber int32 `json:"OfferNumber"`
 }
 
-func (r *Ridder) GetOpportunity(ridderID int32) (*Opportunity, *errortools.Error) {
+func (service *Service) GetOpportunity(ridderID int32) (*Opportunity, *errortools.Error) {
 	url := fmt.Sprintf("opportunities?ridderid=%v", ridderID)
 
 	opportunity := Opportunity{}
-	_, _, e := r.Get(url, &opportunity)
+	_, _, e := service.Get(url, &opportunity)
 
 	return &opportunity, e
 }
 
-func (r *Ridder) UpdateOpportunity(opportunity *Opportunity) (*OpportunityResponse, *errortools.Error) {
+func (service *Service) UpdateOpportunity(opportunity *Opportunity) (*OpportunityResponse, *errortools.Error) {
 	if opportunity == nil {
 		return nil, nil
 	}
@@ -55,7 +56,7 @@ func (r *Ridder) UpdateOpportunity(opportunity *Opportunity) (*OpportunityRespon
 	ev := opportunity.validate()
 
 	opportunityResponse := OpportunityResponse{}
-	req, res, e := r.Post(url, &opportunity, &opportunityResponse)
+	req, res, e := service.Post(url, &opportunity, &opportunityResponse)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -66,7 +67,7 @@ func (r *Ridder) UpdateOpportunity(opportunity *Opportunity) (*OpportunityRespon
 	return &opportunityResponse, e
 }
 
-func (r *Ridder) CreateOpportunity(newOpportunity *Opportunity) (*OpportunityResponse, *errortools.Error) {
+func (service *Service) CreateOpportunity(newOpportunity *Opportunity) (*OpportunityResponse, *errortools.Error) {
 	url := fmt.Sprintf("opportunities")
 
 	if newOpportunity == nil {
@@ -76,7 +77,7 @@ func (r *Ridder) CreateOpportunity(newOpportunity *Opportunity) (*OpportunityRes
 	ev := newOpportunity.validate()
 
 	opportunityResponse := OpportunityResponse{}
-	req, res, e := r.Post(url, &newOpportunity, &opportunityResponse)
+	req, res, e := service.Post(url, &newOpportunity, &opportunityResponse)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -87,7 +88,7 @@ func (r *Ridder) CreateOpportunity(newOpportunity *Opportunity) (*OpportunityRes
 	return &opportunityResponse, e
 }
 
-func (r *Ridder) WorkflowOpportunity(opportunity *Opportunity, workflow Workflow) *errortools.Error {
+func (service *Service) WorkflowOpportunity(opportunity *Opportunity, workflow Workflow) *errortools.Error {
 	if opportunity == nil {
 		return nil
 	}
@@ -98,7 +99,7 @@ func (r *Ridder) WorkflowOpportunity(opportunity *Opportunity, workflow Workflow
 
 	url := fmt.Sprintf("opportunities/%v/%s", opportunity.RidderID, workflow)
 
-	_, _, e := r.Post(url, &opportunity, nil)
+	_, _, e := service.Post(url, &opportunity, nil)
 	return e
 }
 
@@ -107,6 +108,30 @@ func (opportunity *Opportunity) validate() *errortools.Error {
 		(*opportunity).OpportunityName = opportunity.OpportunityName[:MaxLengthOpportunityName]
 
 		return errortools.ErrorMessage(fmt.Sprintf("OpportunityName truncated to %v characters.", MaxLengthOpportunityName))
+	}
+
+	return nil
+}
+func (service *Service) validateOpportunity(opportunity *Opportunity) *errortools.Error {
+	if opportunity == nil {
+		return nil
+	}
+
+	errors := []string{}
+
+	if len(opportunity.OpportunityName) > MaxLengthOpportunityName {
+		(*opportunity).OpportunityName = opportunity.OpportunityName[:MaxLengthOpportunityName]
+
+		errors = append(errors, fmt.Sprintf("OpportunityName truncated to %v characters.", MaxLengthOpportunityName))
+	}
+
+	e := service.removeSpecialCharacters(&(*opportunity).OpportunityName)
+	if e != nil {
+		errors = append(errors, e.Message())
+	}
+
+	if len(errors) > 0 {
+		return errortools.ErrorMessage(strings.Join(errors, "\n"))
 	}
 
 	return nil

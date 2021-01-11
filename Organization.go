@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 )
@@ -19,26 +20,26 @@ type Organization struct {
 	Expired          bool    `json:"Expired"`
 }
 
-func (r *Ridder) GetOrganization(ridderID int32) (*Organization, *errortools.Error) {
+func (service *Service) GetOrganization(ridderID int32) (*Organization, *errortools.Error) {
 	url := fmt.Sprintf("organizations?ridderid=%v", ridderID)
 
 	organization := Organization{}
-	_, _, e := r.Get(url, &organization)
+	_, _, e := service.Get(url, &organization)
 
 	return &organization, e
 }
 
-func (r *Ridder) UpdateOrganization(organization *Organization) (*int32, *errortools.Error) {
+func (service *Service) UpdateOrganization(organization *Organization) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("organizations/%v", organization.RidderID)
 
 	if organization == nil {
 		return nil, nil
 	}
 
-	ev := organization.validate()
+	ev := service.validateOrganization(organization)
 
 	organizationID := new(int32)
-	req, res, e := r.Post(url, &organization, organizationID)
+	req, res, e := service.Post(url, &organization, organizationID)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -49,17 +50,17 @@ func (r *Ridder) UpdateOrganization(organization *Organization) (*int32, *errort
 	return organizationID, e
 }
 
-func (r *Ridder) CreateOrganization(newOrganization *Organization) (*int32, *errortools.Error) {
-	url := fmt.Sprintf("organizations")
+func (service *Service) CreateOrganization(newOrganization *Organization) (*int32, *errortools.Error) {
+	url := "organizations"
 
 	if newOrganization == nil {
 		return nil, nil
 	}
 
-	ev := newOrganization.validate()
+	ev := service.validateOrganization(newOrganization)
 
 	organizationID := new(int32)
-	req, res, e := r.Post(url, &newOrganization, organizationID)
+	req, res, e := service.Post(url, &newOrganization, organizationID)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -70,15 +71,26 @@ func (r *Ridder) CreateOrganization(newOrganization *Organization) (*int32, *err
 	return organizationID, e
 }
 
-func (organization *Organization) validate() *errortools.Error {
+func (service *Service) validateOrganization(organization *Organization) *errortools.Error {
 	if organization == nil {
 		return nil
 	}
 
+	errors := []string{}
+
 	if len(organization.OrganizationName) > MaxLengthOrganizationName {
 		(*organization).OrganizationName = organization.OrganizationName[:MaxLengthOrganizationName]
 
-		return errortools.ErrorMessage(fmt.Sprintf("OrganizationName truncated to %v characters.", MaxLengthOrganizationName))
+		errors = append(errors, fmt.Sprintf("OrganizationName truncated to %v characters.", MaxLengthOrganizationName))
+	}
+
+	e := service.removeSpecialCharacters(&(*organization).OrganizationName)
+	if e != nil {
+		errors = append(errors, e.Message())
+	}
+
+	if len(errors) > 0 {
+		return errortools.ErrorMessage(strings.Join(errors, "\n"))
 	}
 
 	return nil

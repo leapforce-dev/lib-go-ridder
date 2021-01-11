@@ -22,29 +22,29 @@ type Contact struct {
 	OrganizationID       int32  `json:"OrganizationId"`
 }
 
-func (r *Ridder) GetContact(ridderID int32) (*Contact, *errortools.Error) {
+func (service *Service) GetContact(ridderID int32) (*Contact, *errortools.Error) {
 	url := fmt.Sprintf("contacts?ridderid=%v", ridderID)
 
 	contact := Contact{}
-	_, _, e := r.Get(url, &contact)
+	_, _, e := service.Get(url, &contact)
 
 	return &contact, e
 }
 
-func (r *Ridder) UpdateContact(contact *Contact) (*int32, *errortools.Error) {
+func (service *Service) UpdateContact(contact *Contact) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("contacts/%v", contact.RidderID)
 
 	contactID := new(int32)
-	_, _, e := r.Post(url, &contact, &contactID)
+	_, _, e := service.Post(url, &contact, &contactID)
 
 	return contactID, e
 }
 
-func (r *Ridder) CreateContact(newContact *Contact) (*int32, *errortools.Error) {
+func (service *Service) CreateContact(newContact *Contact) (*int32, *errortools.Error) {
 	url := fmt.Sprintf("contacts")
 
 	contactID := new(int32)
-	_, _, e := r.Post(url, &newContact, &contactID)
+	_, _, e := service.Post(url, &newContact, &contactID)
 
 	return contactID, e
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -20,30 +21,30 @@ const (
 
 // type
 //
-type Ridder struct {
+type Service struct {
 	apiURL                string
 	apiKey                string
 	maxRetries            uint
 	secondsBetweenRetries uint32
 }
 
-type RidderConfig struct {
+type ServiceConfig struct {
 	APIURL                string
 	APIKey                string
 	MaxRetries            *uint
 	SecondsBetweenRetries *uint32
 }
 
-func NewRidder(config RidderConfig) (*Ridder, *errortools.Error) {
-	ridder := new(Ridder)
+func NewService(config ServiceConfig) (*Service, *errortools.Error) {
+	ridder := new(Service)
 
 	if config.APIURL == "" {
-		return nil, errortools.ErrorMessage("Ridder API URL not provided")
+		return nil, errortools.ErrorMessage("Service API URL not provided")
 	}
 	ridder.apiURL = strings.TrimRight(config.APIURL, "/")
 
 	if config.APIKey == "" {
-		return nil, errortools.ErrorMessage("Ridder API Key not provided")
+		return nil, errortools.ErrorMessage("Service API Key not provided")
 	}
 	ridder.apiKey = config.APIKey
 
@@ -64,20 +65,20 @@ func NewRidder(config RidderConfig) (*Ridder, *errortools.Error) {
 
 // generic Get method
 //
-func (r *Ridder) Get(urlPath string, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return r.httpRequest(http.MethodGet, urlPath, nil, responseModel)
+func (service *Service) Get(urlPath string, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodGet, urlPath, nil, responseModel)
 }
 
 // generic Post method
 //
-func (r *Ridder) Post(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
-	return r.httpRequest(http.MethodPost, urlPath, bodyModel, responseModel)
+func (service *Service) Post(urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodPost, urlPath, bodyModel, responseModel)
 }
 
-func (r *Ridder) httpRequest(httpMethod string, urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
+func (service *Service) httpRequest(httpMethod string, urlPath string, bodyModel interface{}, responseModel interface{}) (*http.Request, *http.Response, *errortools.Error) {
 	client := new(http.Client)
 
-	url := fmt.Sprintf("%s/%s", r.apiURL, urlPath)
+	url := fmt.Sprintf("%s/%s", service.apiURL, urlPath)
 	fmt.Println(url)
 
 	e := new(errortools.Error)
@@ -113,14 +114,14 @@ func (r *Ridder) httpRequest(httpMethod string, urlPath string, bodyModel interf
 
 	// Add authorization token to header
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("X-ApiKey", r.apiKey)
+	request.Header.Set("X-ApiKey", service.apiKey)
 
 	if bodyModel != nil {
 		request.Header.Set("Content-Type", "application/json-patch+json")
 	}
 
 	// Send out the HTTP request
-	response, e := utilities.DoWithRetry(client, request, r.maxRetries, r.secondsBetweenRetries)
+	response, e := utilities.DoWithRetry(client, request, service.maxRetries, service.secondsBetweenRetries)
 
 	if response != nil {
 		// Check HTTP StatusCode
@@ -183,4 +184,23 @@ func (r *Ridder) httpRequest(httpMethod string, urlPath string, bodyModel interf
 	}
 
 	return request, response, e
+}
+
+func (service *Service) removeSpecialCharacters(test *string) *errortools.Error {
+	if test == nil {
+		return nil
+	}
+
+	re := regexp.MustCompile(`[\\/:*?"<>|]`)
+
+	removedCount := len(*test) - len(string(re.ReplaceAll([]byte(*test), []byte(""))))
+
+	if removedCount == 0 {
+		return nil
+	}
+
+	message := fmt.Sprintf("%v special characters in '%s' replaced by a dot", removedCount, *test)
+	(*test) = string(re.ReplaceAll([]byte(*test), []byte(".")))
+
+	return errortools.ErrorMessage(message)
 }
