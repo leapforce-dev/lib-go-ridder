@@ -53,7 +53,7 @@ func (service *Service) UpdateOpportunity(opportunity *Opportunity) (*Opportunit
 
 	url := fmt.Sprintf("opportunities/%v", opportunity.RidderID)
 
-	ev := opportunity.validate()
+	ev := service.validateOpportunity(opportunity)
 
 	opportunityResponse := OpportunityResponse{}
 	req, res, e := service.Post(url, &opportunity, &opportunityResponse)
@@ -74,7 +74,7 @@ func (service *Service) CreateOpportunity(newOpportunity *Opportunity) (*Opportu
 		return nil, nil
 	}
 
-	ev := newOpportunity.validate()
+	ev := service.validateOpportunity(newOpportunity)
 
 	opportunityResponse := OpportunityResponse{}
 	req, res, e := service.Post(url, &newOpportunity, &opportunityResponse)
@@ -103,15 +103,6 @@ func (service *Service) WorkflowOpportunity(opportunity *Opportunity, workflow W
 	return e
 }
 
-func (opportunity *Opportunity) validate() *errortools.Error {
-	if len(opportunity.OpportunityName) > MaxLengthOpportunityName {
-		(*opportunity).OpportunityName = opportunity.OpportunityName[:MaxLengthOpportunityName]
-
-		return errortools.ErrorMessage(fmt.Sprintf("OpportunityName truncated to %v characters.", MaxLengthOpportunityName))
-	}
-
-	return nil
-}
 func (service *Service) validateOpportunity(opportunity *Opportunity) *errortools.Error {
 	if opportunity == nil {
 		return nil
