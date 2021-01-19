@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
 )
 
 type Organization struct {
@@ -21,17 +22,18 @@ type Organization struct {
 }
 
 func (service *Service) GetOrganization(ridderID int32) (*Organization, *errortools.Error) {
-	url := fmt.Sprintf("organizations?ridderid=%v", ridderID)
-
 	organization := Organization{}
-	_, _, e := service.Get(url, &organization)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("organizations?ridderid=%v", ridderID)),
+		ResponseModel: &organization,
+	}
+	_, _, e := service.get(&requestConfig)
 
 	return &organization, e
 }
 
 func (service *Service) UpdateOrganization(organization *Organization) (*int32, *errortools.Error) {
-	url := fmt.Sprintf("organizations/%v", organization.RidderID)
-
 	if organization == nil {
 		return nil, nil
 	}
@@ -39,7 +41,13 @@ func (service *Service) UpdateOrganization(organization *Organization) (*int32, 
 	ev := service.validateOrganization(organization)
 
 	organizationID := new(int32)
-	req, res, e := service.Post(url, &organization, organizationID)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("organizations/%v", organization.RidderID)),
+		BodyModel:     organization,
+		ResponseModel: organizationID,
+	}
+	req, res, e := service.post(&requestConfig)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -51,8 +59,6 @@ func (service *Service) UpdateOrganization(organization *Organization) (*int32, 
 }
 
 func (service *Service) CreateOrganization(newOrganization *Organization) (*int32, *errortools.Error) {
-	url := "organizations"
-
 	if newOrganization == nil {
 		return nil, nil
 	}
@@ -60,7 +66,13 @@ func (service *Service) CreateOrganization(newOrganization *Organization) (*int3
 	ev := service.validateOrganization(newOrganization)
 
 	organizationID := new(int32)
-	req, res, e := service.Post(url, &newOrganization, organizationID)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url("organizations"),
+		BodyModel:     newOrganization,
+		ResponseModel: organizationID,
+	}
+	req, res, e := service.post(&requestConfig)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -78,11 +90,20 @@ func (service *Service) validateOrganization(organization *Organization) *errort
 
 	errors := []string{}
 
-	if len(organization.OrganizationName) > MaxLengthOrganizationName {
-		(*organization).OrganizationName = organization.OrganizationName[:MaxLengthOrganizationName]
+	service.truncateString("EmailAddress", &(*organization).EmailAddress, MaxLengthOrganizationEmail, &errors)
+	service.truncateString("OrganizationName", &(*organization).OrganizationName, MaxLengthOrganizationName, &errors)
+	service.truncateString("Phone", &(*organization).Phone, MaxLengthOrganizationPhone, &errors)
+	service.truncateString("Website", &(*organization).Website, MaxLengthOrganizationWebsite, &errors)
 
-		errors = append(errors, fmt.Sprintf("OrganizationName truncated to %v characters.", MaxLengthOrganizationName))
-	}
+	service.truncateString("BillingAddress-HouseNumber", &(*organization).BillingAddress.HouseNumber, MaxLengthAddressHouseNumber, &errors)
+	service.truncateString("BillingAddress-City", &(*organization).BillingAddress.City, MaxLengthAddressCity, &errors)
+	service.truncateString("BillingAddress-ZipCode", &(*organization).BillingAddress.ZipCode, MaxLengthAddressZipCode, &errors)
+	service.truncateString("BillingAddress-Street", &(*organization).BillingAddress.Street, MaxLengthAddressStreet, &errors)
+
+	service.truncateString("ShippingAddress-HouseNumber", &(*organization).ShippingAddress.HouseNumber, MaxLengthAddressHouseNumber, &errors)
+	service.truncateString("ShippingAddress-City", &(*organization).ShippingAddress.City, MaxLengthAddressCity, &errors)
+	service.truncateString("ShippingAddress-ZipCode", &(*organization).ShippingAddress.ZipCode, MaxLengthAddressZipCode, &errors)
+	service.truncateString("ShippingAddress-Street", &(*organization).ShippingAddress.Street, MaxLengthAddressStreet, &errors)
 
 	e := service.removeSpecialCharacters(&(*organization).OrganizationName)
 	if e != nil {

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
 )
 
 type Workflow string
@@ -38,10 +39,13 @@ type OpportunityResponse struct {
 }
 
 func (service *Service) GetOpportunity(ridderID int32) (*Opportunity, *errortools.Error) {
-	url := fmt.Sprintf("opportunities?ridderid=%v", ridderID)
-
 	opportunity := Opportunity{}
-	_, _, e := service.Get(url, &opportunity)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("opportunities?ridderid=%v", ridderID)),
+		ResponseModel: &opportunity,
+	}
+	_, _, e := service.get(&requestConfig)
 
 	return &opportunity, e
 }
@@ -51,12 +55,16 @@ func (service *Service) UpdateOpportunity(opportunity *Opportunity) (*Opportunit
 		return nil, nil
 	}
 
-	url := fmt.Sprintf("opportunities/%v", opportunity.RidderID)
-
 	ev := service.validateOpportunity(opportunity)
 
 	opportunityResponse := OpportunityResponse{}
-	req, res, e := service.Post(url, &opportunity, &opportunityResponse)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(fmt.Sprintf("opportunities/%v", opportunity.RidderID)),
+		BodyModel:     opportunity,
+		ResponseModel: &opportunityResponse,
+	}
+	req, res, e := service.post(&requestConfig)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -68,8 +76,6 @@ func (service *Service) UpdateOpportunity(opportunity *Opportunity) (*Opportunit
 }
 
 func (service *Service) CreateOpportunity(newOpportunity *Opportunity) (*OpportunityResponse, *errortools.Error) {
-	url := fmt.Sprintf("opportunities")
-
 	if newOpportunity == nil {
 		return nil, nil
 	}
@@ -77,7 +83,13 @@ func (service *Service) CreateOpportunity(newOpportunity *Opportunity) (*Opportu
 	ev := service.validateOpportunity(newOpportunity)
 
 	opportunityResponse := OpportunityResponse{}
-	req, res, e := service.Post(url, &newOpportunity, &opportunityResponse)
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url("opportunities"),
+		BodyModel:     newOpportunity,
+		ResponseModel: &opportunityResponse,
+	}
+	req, res, e := service.post(&requestConfig)
 
 	if ev != nil {
 		ev.SetRequest(req)
@@ -97,9 +109,12 @@ func (service *Service) WorkflowOpportunity(opportunity *Opportunity, workflow W
 		return nil
 	}
 
-	url := fmt.Sprintf("opportunities/%v/%s", opportunity.RidderID, workflow)
+	requestConfig := go_http.RequestConfig{
+		URL:       service.url(fmt.Sprintf("opportunities/%v/%s", opportunity.RidderID, workflow)),
+		BodyModel: opportunity,
+	}
+	_, _, e := service.post(&requestConfig)
 
-	_, _, e := service.Post(url, &opportunity, nil)
 	return e
 }
 
@@ -110,11 +125,8 @@ func (service *Service) validateOpportunity(opportunity *Opportunity) *errortool
 
 	errors := []string{}
 
-	if len(opportunity.OpportunityName) > MaxLengthOpportunityName {
-		(*opportunity).OpportunityName = opportunity.OpportunityName[:MaxLengthOpportunityName]
-
-		errors = append(errors, fmt.Sprintf("OpportunityName truncated to %v characters.", MaxLengthOpportunityName))
-	}
+	service.truncateString("OpportunityName", &(*opportunity).OpportunityName, MaxLengthOpportunityName, &errors)
+	service.truncateString("InsightlyState", &(*opportunity).InsightlyState, MaxLengthOpportunityInsightlyState, &errors)
 
 	e := service.removeSpecialCharacters(&(*opportunity).OpportunityName)
 	if e != nil {
