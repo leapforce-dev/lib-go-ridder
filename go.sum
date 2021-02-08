@@ -209,6 +209,8 @@ github.com/leapforce-libraries/go_http v0.0.0-20210119211506-3f15e1aa005b h1:9pV
 github.com/leapforce-libraries/go_http v0.0.0-20210119211506-3f15e1aa005b/go.mod h1:xqKc0io3rZB/bCsH8/F1diK3JGJacZv/2IBYF7lIWt4=
 github.com/leapforce-libraries/go_http v0.0.0-20210119220844-7ec1c43be31a h1:i8oaR8emYqKcUreaIweDwykGZ1nc4eOoKQr3dhSVM6o=
 github.com/leapforce-libraries/go_http v0.0.0-20210119220844-7ec1c43be31a/go.mod h1:xqKc0io3rZB/bCsH8/F1diK3JGJacZv/2IBYF7lIWt4=
+github.com/leapforce-libraries/go_http v0.0.0-20210208175749-7dd156a8da26 h1:GW0ltZYEqHNbuzyAr/n/pSxg/95IRKTAtBE/QgpL/as=
+github.com/leapforce-libraries/go_http v0.0.0-20210208175749-7dd156a8da26/go.mod h1:xqKc0io3rZB/bCsH8/F1diK3JGJacZv/2IBYF7lIWt4=
 github.com/leapforce-libraries/go_types v0.0.0-20201116193520-d5f73916424b/go.mod h1:0k0QPi4o2OO3yau759B2U5XIEPbuYTf56QxyF8WdV4o=
 github.com/leapforce-libraries/go_utilities v0.0.0-20201203104953-9faa22db84c3 h1:jXXXzCuv7RzPC7jnl78uJwv8fVyhP+pjiaPCS+Y1mzo=
 github.com/leapforce-libraries/go_utilities v0.0.0-20201203104953-9faa22db84c3/go.mod h1:KczL99mKoKqB9SZL07QVbTY2uNMhHKDZRqgaWMU7RKI=
@@ -225,6 +227,8 @@ github.com/leapforce-libraries/go_utilities v0.0.0-20210109121829-9a54bda218c7/g
 github.com/leapforce-libraries/go_utilities v0.0.0-20210118212300-a6ca21d85d59/go.mod h1:i+C6R2dATK2RsD5+XDV9VqkKSB64SDA+zSLhCKsAyVI=
 github.com/leapforce-libraries/go_utilities v0.0.0-20210119180100-6894b526cec8 h1:vQPZHo18w2CIydL2jHNgt36JR7EzFpBZNjh2Z80ajuM=
 github.com/leapforce-libraries/go_utilities v0.0.0-20210119180100-6894b526cec8/go.mod h1:i+C6R2dATK2RsD5+XDV9VqkKSB64SDA+zSLhCKsAyVI=
+github.com/leapforce-libraries/go_utilities v0.0.0-20210125210535-d87e8acc2518 h1:Y5GEJsO401RevZk9NFEXPqL4Mc4lL6goC9yZfqTIthk=
+github.com/leapforce-libraries/go_utilities v0.0.0-20210125210535-d87e8acc2518/go.mod h1:i+C6R2dATK2RsD5+XDV9VqkKSB64SDA+zSLhCKsAyVI=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-isatty v0.0.7/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
