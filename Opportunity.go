@@ -19,18 +19,18 @@ const (
 )
 
 type Opportunity struct {
-	RidderID             int32  `json:"RidderId"`
-	InsightlyID          int32  `json:"InsightlyId"`
-	InsightlyState       string `json:"InsightlyState"`
-	OfferNumber          int32  `json:"OfferNumber"`
-	OpportunityName      string `json:"OpportunityName"`
-	OrganizationID       int32  `json:"OrganizationId"`
-	ContactID            int32  `json:"ContactId"`
-	Currency             string `json:"Currency"`
-	OpportunityCreated   string `json:"OpportunityCreated"`
-	ForecastCloseDate    string `json:"ForecastCloseDate"`
-	ProbabilityOfWinning int32  `json:"ProbabilityOfWinning"`
-	SalesPerson          int32  `json:"SalesPerson"`
+	RidderID             int32   `json:"RidderId"`
+	InsightlyID          int32   `json:"InsightlyId"`
+	InsightlyState       string  `json:"InsightlyState"`
+	OfferNumber          int32   `json:"OfferNumber"`
+	OpportunityName      string  `json:"OpportunityName"`
+	OrganizationID       int32   `json:"OrganizationId"`
+	ContactID            int32   `json:"ContactId"`
+	Currency             string  `json:"Currency"`
+	OpportunityCreated   *string `json:"OpportunityCreated,omitempty"`
+	ForecastCloseDate    string  `json:"ForecastCloseDate"`
+	ProbabilityOfWinning int32   `json:"ProbabilityOfWinning"`
+	SalesPerson          int32   `json:"SalesPerson"`
 }
 
 type OpportunityResponse struct {
