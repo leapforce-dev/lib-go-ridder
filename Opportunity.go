@@ -31,11 +31,14 @@ type Opportunity struct {
 	ForecastCloseDate    string  `json:"ForecastCloseDate"`
 	ProbabilityOfWinning int32   `json:"ProbabilityOfWinning"`
 	SalesPerson          int32   `json:"SalesPerson"`
+	ExternalKey          string  `json:"ExternalKey"`
+	Revision             int32   `json:"Revision"`
 }
 
 type OpportunityResponse struct {
 	RidderID    int32 `json:"RidderId"`
 	OfferNumber int32 `json:"OfferNumber"`
+	Revision    int32 `json:"Revision"`
 }
 
 func (service *Service) GetOpportunity(ridderID int32) (*Opportunity, *errortools.Error) {
