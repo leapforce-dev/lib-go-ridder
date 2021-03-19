@@ -56,15 +56,15 @@ func NewService(config ServiceConfig) (*Service, *errortools.Error) {
 		return nil, errortools.ErrorMessage("Service API Key not provided")
 	}
 
-	httpServiceConfig := go_http.ServiceConfig{
-		MaxRetries:            config.MaxRetries,
-		SecondsBetweenRetries: config.SecondsBetweenRetries,
+	httpService, e := go_http.NewService(&go_http.ServiceConfig{})
+	if e != nil {
+		return nil, e
 	}
 
 	return &Service{
 		apiURL:      strings.TrimRight(config.APIURL, "/"),
 		apiKey:      config.APIKey,
-		httpService: go_http.NewService(httpServiceConfig),
+		httpService: httpService,
 	}, nil
 }
 
