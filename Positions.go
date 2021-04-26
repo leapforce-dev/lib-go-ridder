@@ -1,0 +1,72 @@
+package ridder
+
+import (
+	"fmt"
+
+	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
+)
+
+type Position struct {
+	ID          int32   `json:"Id"`
+	Code        string  `json:"Code"`
+	Description *string `json:"Description"`
+}
+
+func (service *Service) GetPositions() (*[]Position, *errortools.Error) {
+	var positions []Position
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url("positions"),
+		ResponseModel: &positions,
+	}
+	_, _, e := service.get(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
+
+	return &positions, nil
+}
+
+func (service *Service) GetPositionByID(positionID int32) (*Position, *errortools.Error) {
+	return service.getPosition(fmt.Sprintf("positions/id/%v", positionID))
+}
+
+func (service *Service) GetPositionByCode(code string) (*Position, *errortools.Error) {
+	return service.getPosition(fmt.Sprintf("positions/code/%s", code))
+}
+
+func (service *Service) getPosition(urlPath string) (*Position, *errortools.Error) {
+	var position Position
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url(urlPath),
+		ResponseModel: &position,
+	}
+	_, _, e := service.get(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
+
+	return &position, nil
+}
+
+func (service *Service) CreatePosition(position *Position) (*int32, *errortools.Error) {
+	if position == nil {
+		return nil, nil
+	}
+
+	var positionIDString string
+
+	requestConfig := go_http.RequestConfig{
+		URL:           service.url("positions"),
+		BodyModel:     position,
+		ResponseModel: &positionIDString,
+	}
+	_, _, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
+
+	return service.parseInt32String(positionIDString)
+}

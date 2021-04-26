@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strings"
+	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
-	utilities "github.com/leapforce-libraries/go_utilities"
 )
 
 const (
+	apiURL                             string = "https://integrations.ecisolutions.com/api"
 	MaxLengthOrganizationEmail         int    = 255
 	MaxLengthOrganizationName          int    = 60
 	MaxLengthOrganizationPhone         int    = 50
@@ -35,21 +35,17 @@ const (
 // type
 //
 type Service struct {
-	apiURL      string
 	apiKey      string
 	httpService *go_http.Service
 }
 
 type ServiceConfig struct {
-	APIURL                string
-	APIKey                string
-	MaxRetries            *uint
-	SecondsBetweenRetries *uint32
+	APIKey string
 }
 
-func NewService(config ServiceConfig) (*Service, *errortools.Error) {
-	if config.APIURL == "" {
-		return nil, errortools.ErrorMessage("Service API URL not provided")
+func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
+	if config == nil {
+		return nil, errortools.ErrorMessage("ServiceConfig must not be a nil pointer")
 	}
 
 	if config.APIKey == "" {
@@ -62,7 +58,6 @@ func NewService(config ServiceConfig) (*Service, *errortools.Error) {
 	}
 
 	return &Service{
-		apiURL:      strings.TrimRight(config.APIURL, "/"),
 		apiKey:      config.APIKey,
 		httpService: httpService,
 	}, nil
@@ -72,26 +67,26 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 	// add api key header
 	header := http.Header{}
 	header.Set("X-ApiKey", service.apiKey)
-
-	if !utilities.IsNil(requestConfig.BodyModel) {
-		header.Set("Content-Type", "application/json-patch+json")
-	}
+	/*
+		if !utilities.IsNil(requestConfig.BodyModel) {
+			header.Set("Content-Type", "application/json-patch+json")
+		}*/
 	(*requestConfig).NonDefaultHeaders = &header
 
 	// add error model
-	errorResponse := ErrorResponse{}
-	(*requestConfig).ErrorModel = &errorResponse
+	problemDetails := ProblemDetails{}
+	(*requestConfig).ErrorModel = &problemDetails
 
 	request, response, e := service.httpService.HTTPRequest(httpMethod, requestConfig)
-	if errorResponse.Error != "" {
-		e.SetMessage(errorResponse.Error)
+	if problemDetails.Title != "" {
+		e.SetMessage(problemDetails.Title)
 	}
 
 	return request, response, e
 }
 
 func (service *Service) url(path string) string {
-	return fmt.Sprintf("%s/%s", service.apiURL, path)
+	return fmt.Sprintf("%s/%s", apiURL, path)
 }
 
 func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
@@ -100,6 +95,10 @@ func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request
 
 func (service *Service) post(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
 	return service.httpRequest(http.MethodPost, requestConfig)
+}
+
+func (service *Service) put(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodPut, requestConfig)
 }
 
 func (service *Service) truncateString(fieldName string, value *string, maxLength int, errors *[]string) {
@@ -127,4 +126,14 @@ func (service *Service) removeSpecialCharacters(test *string) *errortools.Error 
 	(*test) = string(re.ReplaceAll([]byte(*test), []byte(".")))
 
 	return errortools.ErrorMessage(message)
+}
+
+func (service *Service) parseInt32String(int32String string) (*int32, *errortools.Error) {
+	_int64, err := strconv.ParseInt(int32String, 10, 32)
+	if err != nil {
+		return nil, errortools.ErrorMessage(err)
+	}
+	_int32 := int32(_int64)
+
+	return &_int32, nil
 }
