@@ -16,7 +16,7 @@ const (
 )
 
 func (service *Service) GetLanguage(languageFormat LanguageFormat, languageCode string) (*int32, *errortools.Error) {
-	var params url.Values
+	params := url.Values{}
 	params.Set("languageIsoFormat", string(languageFormat))
 	params.Set("languageCode", languageCode)
 

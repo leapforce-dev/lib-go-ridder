@@ -17,7 +17,7 @@ const (
 )
 
 func (service *Service) GetCountry(countryFormat CountryFormat, countryCode string) (*int32, *errortools.Error) {
-	var params url.Values
+	params := url.Values{}
 	params.Set("countryIsoFormat", string(countryFormat))
 	params.Set("countryCode", countryCode)
 

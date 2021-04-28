@@ -9,20 +9,20 @@ type Relation struct {
 	ID              int32    `json:"Id"`
 	ExternalCRMID   string   `json:"ExternalCrmId"`
 	Name            string   `json:"Name"`
-	Code            *string  `json:"Code"`
-	CurrencyCode    *string  `json:"CurrencyCode"`
+	Code            *string  `json:"Code,omitempty"`
+	CurrencyCode    *string  `json:"CurrencyCode,omitempty"`
 	LanguageID      int32    `json:"LanguageId"`
-	SalesPersonID   *int32   `json:"SalesPersonId"`
-	RelationTypeID  *int32   `json:"RelationTypeId"`
-	IndustryID      *int32   `json:"IndustryId"`
-	Phone1          *string  `json:"Phone1"`
-	Phone2          *string  `json:"Phone2"`
-	Fax             *string  `json:"Fax"`
-	Email           *string  `json:"Email"`
-	Website         *string  `json:"Website"`
-	Memo            *string  `json:"Memo"`
-	PostalAddress   *Address `json:"PostalAddress"`
-	VisitingAddress *Address `json:"VisitingAddress"`
+	SalesPersonID   *int32   `json:"SalesPersonId,omitempty"`
+	RelationTypeID  *int32   `json:"RelationTypeId,omitempty"`
+	IndustryID      *int32   `json:"IndustryId,omitempty"`
+	Phone1          *string  `json:"Phone1,omitempty"`
+	Phone2          *string  `json:"Phone2,omitempty"`
+	Fax             *string  `json:"Fax,omitempty"`
+	Email           *string  `json:"Email,omitempty"`
+	Website         *string  `json:"Website,omitempty"`
+	Memo            *string  `json:"Memo,omitempty"`
+	PostalAddress   *Address `json:"PostalAddress,omitempty"`
+	VisitingAddress *Address `json:"VisitingAddress,omitempty"`
 }
 
 func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {

@@ -1,12 +1,12 @@
 package ridder
 
 type Address struct {
-	ID          int32   `json:"Id"`
-	CountryID   int32   `json:"CountryId"`
-	City        *string `json:"City"`
-	ZIPCode     *string `json:"ZipCode"`
-	Street      *string `json:"Street"`
-	HouseNumber *int32  `json:"HouseNumber"`
-	Addition    *string `json:"Addition"`
-	StateID     *int32  `json:"StateId"`
+	ID          int32   `json:"Id,omitempty"`
+	CountryID   int32   `json:"CountryId,omitempty"`
+	City        *string `json:"City,omitempty"`
+	ZIPCode     *string `json:"ZipCode,omitempty"`
+	Street      *string `json:"Street,omitempty"`
+	HouseNumber *int32  `json:"HouseNumber,omitempty"`
+	Addition    *string `json:"Addition,omitempty"`
+	StateID     *int32  `json:"StateId,omitempty"`
 }
