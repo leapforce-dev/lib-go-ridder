@@ -1,28 +1,31 @@
 package ridder
 
 import (
+	"strconv"
+
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
 )
 
 type Relation struct {
-	ID              int32    `json:"Id"`
-	ExternalCRMID   string   `json:"ExternalCrmId"`
-	Name            string   `json:"Name"`
-	Code            *string  `json:"Code,omitempty"`
-	CurrencyCode    *string  `json:"CurrencyCode,omitempty"`
-	LanguageID      int32    `json:"LanguageId"`
-	SalesPersonID   *int32   `json:"SalesPersonId,omitempty"`
-	RelationTypeID  *int32   `json:"RelationTypeId,omitempty"`
-	IndustryID      *int32   `json:"IndustryId,omitempty"`
-	Phone1          *string  `json:"Phone1,omitempty"`
-	Phone2          *string  `json:"Phone2,omitempty"`
-	Fax             *string  `json:"Fax,omitempty"`
-	Email           *string  `json:"Email,omitempty"`
-	Website         *string  `json:"Website,omitempty"`
-	Memo            *string  `json:"Memo,omitempty"`
-	PostalAddress   *Address `json:"PostalAddress,omitempty"`
-	VisitingAddress *Address `json:"VisitingAddress,omitempty"`
+	ID                int32          `json:"Id"`
+	ExternalCRMID     string         `json:"ExternalCrmId"`
+	Name              string         `json:"Name"`
+	Code              *string        `json:"Code,omitempty"`
+	CurrencyISOCode   string         `json:"CurrencyIsoCode"`
+	LanguageISOCode   string         `json:"LanguageIsoCode"`
+	LanguageISOFormat LanguageFormat `json:"LanguageIsoFormat"`
+	SalesPersonID     *int32         `json:"SalesPersonId,omitempty"`
+	RelationTypeCode  *string        `json:"RelationTypeCode,omitempty"`
+	IndustryCode      *string        `json:"IndustryCode,omitempty"`
+	Phone1            *string        `json:"Phone1,omitempty"`
+	Phone2            *string        `json:"Phone2,omitempty"`
+	Fax               *string        `json:"Fax,omitempty"`
+	Email             *string        `json:"Email,omitempty"`
+	Website           *string        `json:"Website,omitempty"`
+	Memo              *string        `json:"Memo,omitempty"`
+	PostalAddress     *Address       `json:"PostalAddress,omitempty"`
+	VisitingAddress   *Address       `json:"VisitingAddress,omitempty"`
 }
 
 func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {
@@ -52,24 +55,27 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.
 		return nil, nil
 	}
 
-	ev := service.validateRelation(relation)
+	e := service.validateRelation(relation)
+	if e != nil {
+		errortools.CaptureWarning(e)
+	}
 
-	relationID := new(int32)
+	var relationIDString string
 
 	requestConfig := go_http.RequestConfig{
 		URL:           service.url("relations"),
 		BodyModel:     relation,
-		ResponseModel: relationID,
+		ResponseModel: &relationIDString,
 	}
-	req, res, e := service.post(&requestConfig)
+	_, _, e = service.post(&requestConfig)
 
-	if ev != nil {
-		ev.SetRequest(req)
-		ev.SetResponse(res)
-		errortools.CaptureWarning(ev)
+	relationIDInt64, err := strconv.ParseInt(relationIDString, 10, 64)
+	if err != nil {
+		return nil, errortools.ErrorMessage(err)
 	}
+	relationIDInt32 := int32(relationIDInt64)
 
-	return relationID, e
+	return &relationIDInt32, e
 }
 
 func (service *Service) validateRelation(relation *Relation) *errortools.Error {

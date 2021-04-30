@@ -1,6 +1,8 @@
 package ridder
 
 import (
+	"strconv"
+
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
 )
@@ -10,16 +12,16 @@ type Contact struct {
 	RelationID          int32   `json:"RelationId"`
 	ExternalCRMID       string  `json:"ExternalCrmId"`
 	Person              Person  `json:"Person"`
-	Email               *string `json:"Email"`
-	Fax                 *string `json:"Fax"`
-	BusinessPhone1      *string `json:"BusinessPhone1"`
-	BusinessPhone2      *string `json:"BusinessPhone2"`
-	BusinessMobilePhone *string `json:"BusinessMobilePhone"`
-	PrivatePhone1       *string `json:"PrivatePhone1"`
-	PrivatePhone2       *string `json:"PrivatePhone2"`
-	PrivateMobilePhone  *string `json:"PrivateMobilePhone"`
-	PositionID          *int32  `json:"PositionId"`
-	Memo                *string `json:"Memo"`
+	Email               *string `json:"Email,omitempty"`
+	Fax                 *string `json:"Fax,omitempty"`
+	BusinessPhone1      *string `json:"BusinessPhone1,omitempty"`
+	BusinessPhone2      *string `json:"BusinessPhone2,omitempty"`
+	BusinessMobilePhone *string `json:"BusinessMobilePhone,omitempty"`
+	PrivatePhone1       *string `json:"PrivatePhone1,omitempty"`
+	PrivatePhone2       *string `json:"PrivatePhone2,omitempty"`
+	PrivateMobilePhone  *string `json:"PrivateMobilePhone,omitempty"`
+	PositionID          *int32  `json:"PositionId,omitempty"`
+	Memo                *string `json:"Memo,omitempty"`
 }
 
 /*
@@ -62,24 +64,27 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Err
 		return nil, nil
 	}
 
-	ev := service.validateContact(contact)
+	e := service.validateContact(contact)
+	if e != nil {
+		errortools.CaptureWarning(e)
+	}
 
-	contactID := new(int32)
+	var contactIDString string
 
 	requestConfig := go_http.RequestConfig{
 		URL:           service.url("contacts"),
 		BodyModel:     contact,
-		ResponseModel: contactID,
+		ResponseModel: &contactIDString,
 	}
-	req, res, e := service.post(&requestConfig)
+	_, _, e = service.post(&requestConfig)
 
-	if ev != nil {
-		ev.SetRequest(req)
-		ev.SetResponse(res)
-		errortools.CaptureWarning(ev)
+	contactIDInt64, err := strconv.ParseInt(contactIDString, 10, 64)
+	if err != nil {
+		return nil, errortools.ErrorMessage(err)
 	}
+	contactIDInt32 := int32(contactIDInt64)
 
-	return contactID, e
+	return &contactIDInt32, e
 }
 
 func (service *Service) validateContact(contact *Contact) *errortools.Error {

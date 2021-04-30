@@ -15,10 +15,15 @@ type inboundXMLMessage struct {
 }
 
 func (service *Service) SendXMLMessage(messageID string, object interface{}) (*int32, *errortools.Error) {
-	b, err := xml.Marshal(object)
+	b, err := xml.MarshalIndent(object, "", `   `)
 	if err != nil {
 		return nil, errortools.ErrorMessage(err)
 	}
+
+	// add xml header
+	b = []byte(xml.Header + string(b))
+	//fmt.Println(string(b))
+
 	base64encodedXMLString := base64.StdEncoding.EncodeToString(b)
 
 	message := inboundXMLMessage{

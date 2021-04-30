@@ -1,15 +1,17 @@
 package ridder
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
+	utilities "github.com/leapforce-libraries/go_utilities"
 )
 
 const (
-	DateFormat string = "2006-01-02"
+	layout string = "2006-01-02"
 )
 
 type DateString civil.Date
@@ -25,13 +27,21 @@ func (d *DateString) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	_t, err := time.Parse(DateFormat, unquoted)
+	_t, err := time.Parse(layout, unquoted)
 	if err != nil {
 		return err
 	}
 
 	*d = DateString(civil.DateOf(_t))
 	return nil
+}
+
+func (d *DateString) MarshalJSON() ([]byte, error) {
+	if d == nil {
+		return json.Marshal(nil)
+	}
+
+	return json.Marshal(utilities.DateToTime(civil.Date(*d)).Format(layout))
 }
 
 func (d *DateString) ValuePtr() *civil.Date {
