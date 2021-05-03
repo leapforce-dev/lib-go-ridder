@@ -42,21 +42,21 @@ func (service *Service) UpdateContact(contact *Contact) *errortools.Error {
 		return nil
 	}
 
-	ev := service.validateContact(contact)
+	e := service.validateContact(contact)
+	if e != nil {
+		errortools.CaptureWarning(e)
+	}
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("contacts"),
 		BodyModel: contact,
 	}
-	req, res, e := service.put(&requestConfig)
-
-	if ev != nil {
-		ev.SetRequest(req)
-		ev.SetResponse(res)
-		errortools.CaptureWarning(ev)
+	_, _, e = service.put(&requestConfig)
+	if e != nil {
+		return e
 	}
 
-	return e
+	return nil
 }
 
 func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Error) {

@@ -1,6 +1,7 @@
 package ridder
 
 import (
+	"fmt"
 	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -15,7 +16,7 @@ type Relation struct {
 	CurrencyISOCode   string         `json:"CurrencyIsoCode"`
 	LanguageISOCode   string         `json:"LanguageIsoCode"`
 	LanguageISOFormat LanguageFormat `json:"LanguageIsoFormat"`
-	SalesPersonID     *int32         `json:"SalesPersonId,omitempty"`
+	SalesPersonID     *string        `json:"SalesPersonId,omitempty"`
 	RelationTypeCode  *string        `json:"RelationTypeCode,omitempty"`
 	IndustryCode      *string        `json:"IndustryCode,omitempty"`
 	Phone1            *string        `json:"Phone1,omitempty"`
@@ -33,21 +34,22 @@ func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {
 		return nil
 	}
 
-	ev := service.validateRelation(relation)
+	e := service.validateRelation(relation)
+	if e != nil {
+		errortools.CaptureWarning(e)
+	}
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("relations"),
 		BodyModel: relation,
 	}
-	req, res, e := service.put(&requestConfig)
-
-	if ev != nil {
-		ev.SetRequest(req)
-		ev.SetResponse(res)
-		errortools.CaptureWarning(ev)
+	_, _, e = service.put(&requestConfig)
+	fmt.Println(e)
+	if e != nil {
+		return e
 	}
 
-	return e
+	return nil
 }
 
 func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.Error) {
