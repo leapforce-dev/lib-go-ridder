@@ -22,7 +22,6 @@ func (service *Service) SendXMLMessage(messageID string, object interface{}) (*i
 
 	// add xml header
 	b = []byte(xml.Header + string(b))
-	//fmt.Println(string(b))
 
 	base64encodedXMLString := base64.StdEncoding.EncodeToString(b)
 

@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	apiURL                             string = "https://integrations.ecisolutions.com/api"
 	MaxLengthOrganizationEmail         int    = 255
 	MaxLengthOrganizationName          int    = 60
 	MaxLengthOrganizationPhone         int    = 50
@@ -35,17 +34,23 @@ const (
 // type
 //
 type Service struct {
+	apiURL      string
 	apiKey      string
 	httpService *go_http.Service
 }
 
 type ServiceConfig struct {
+	APIURL string
 	APIKey string
 }
 
 func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 	if config == nil {
 		return nil, errortools.ErrorMessage("ServiceConfig must not be a nil pointer")
+	}
+
+	if config.APIURL == "" {
+		return nil, errortools.ErrorMessage("Service API URL not provided")
 	}
 
 	if config.APIKey == "" {
@@ -58,6 +63,7 @@ func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 	}
 
 	return &Service{
+		apiURL:      config.APIURL,
 		apiKey:      config.APIKey,
 		httpService: httpService,
 	}, nil
@@ -67,10 +73,6 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 	// add api key header
 	header := http.Header{}
 	header.Set("X-ApiKey", service.apiKey)
-	/*
-		if !utilities.IsNil(requestConfig.BodyModel) {
-			header.Set("Content-Type", "application/json-patch+json")
-		}*/
 	(*requestConfig).NonDefaultHeaders = &header
 
 	// add error model
@@ -86,7 +88,7 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 }
 
 func (service *Service) url(path string) string {
-	return fmt.Sprintf("%s/%s", apiURL, path)
+	return fmt.Sprintf("%s/%s", service.apiURL, path)
 }
 
 func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {

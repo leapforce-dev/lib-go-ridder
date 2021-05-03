@@ -1,7 +1,6 @@
 package ridder
 
 import (
-	"fmt"
 	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -35,16 +34,13 @@ func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {
 	}
 
 	e := service.validateRelation(relation)
-	if e != nil {
-		errortools.CaptureWarning(e)
-	}
+	errortools.CaptureWarning(e)
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("relations"),
 		BodyModel: relation,
 	}
 	_, _, e = service.put(&requestConfig)
-	fmt.Println(e)
 	if e != nil {
 		return e
 	}
