@@ -103,6 +103,10 @@ func (service *Service) put(requestConfig *go_http.RequestConfig) (*http.Request
 	return service.httpRequest(http.MethodPut, requestConfig)
 }
 
+func (service *Service) delete(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+	return service.httpRequest(http.MethodDelete, requestConfig)
+}
+
 func (service *Service) truncateString(fieldName string, value *string, maxLength int, errors *[]string) {
 	if len(*value) > maxLength {
 		*value = (*value)[:maxLength]

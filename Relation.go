@@ -76,6 +76,16 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.
 	return &relationIDInt32, e
 }
 
+func (service *Service) DeleteRelation(id int32) *errortools.Error {
+	requestConfig := go_http.RequestConfig{
+		URL:       service.url("relations"),
+		BodyModel: id,
+	}
+	_, _, e := service.delete(&requestConfig)
+
+	return e
+}
+
 func (service *Service) validateRelation(relation *Relation) *errortools.Error {
 	if relation == nil {
 		return nil

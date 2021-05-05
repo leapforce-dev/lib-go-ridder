@@ -87,33 +87,20 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Err
 	return &contactIDInt32, e
 }
 
+func (service *Service) DeleteContact(id int32) *errortools.Error {
+	requestConfig := go_http.RequestConfig{
+		URL:       service.url("contacts"),
+		BodyModel: id,
+	}
+	_, _, e := service.delete(&requestConfig)
+
+	return e
+}
+
 func (service *Service) validateContact(contact *Contact) *errortools.Error {
 	if contact == nil {
 		return nil
 	}
-	/*
-		errors := []string{}
-
-		service.truncateString("Phone", &(*contact).Phone, MaxLengthContactPhone, &errors)
-		service.truncateString("Email", &(*contact).Email, MaxLengthContactEmail, &errors)
-		service.truncateString("FunctionName", &(*contact).FunctionName, MaxLengthContactFunctionName, &errors)
-		service.truncateString("Cellphone", &(*contact).Cellphone, MaxLengthContactCellphone, &errors)
-		service.truncateString("LastName", &(*contact).Person.LastName, MaxLengthContactLastName, &errors)
-		service.truncateString("Initials", &(*contact).Person.Initials, MaxLengthContactInitials, &errors)
-		service.truncateString("FirstName", &(*contact).Person.FirstName, MaxLengthContactFirstName, &errors)
-
-		if len(errors) > 0 {
-			return errortools.ErrorMessage(strings.Join(errors, "\n"))
-		}*/
 
 	return nil
 }
-
-/*
-func (c *Contact) MarshalJSON() ([]byte, error) {
-	val := reflect.ValueOf(c).Elem()
-	for i := 0; i < val.Type().NumField(); i++ {
-		fmt.Println(val.Type().Field(i).Tag.Get("json"))
-	}
-}
-*/
