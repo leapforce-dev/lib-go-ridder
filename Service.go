@@ -13,28 +13,9 @@ import (
 )
 
 const (
-	MaxLengthOrganizationEmail         int    = 255
-	MaxLengthOrganizationName          int    = 60
-	MaxLengthOrganizationPhone         int    = 50
-	MaxLengthOrganizationWebsite       int    = 255
-	MaxLengthAddressHouseNumber        int    = 50
-	MaxLengthAddressCity               int    = 50
-	MaxLengthAddressZipCode            int    = 50
-	MaxLengthAddressStreet             int    = 50
-	MaxLengthContactPhone              int    = 50
-	MaxLengthContactEmail              int    = 255
-	MaxLengthContactFunctionName       int    = 150
-	MaxLengthContactCellphone          int    = 50
-	MaxLengthContactLastName           int    = 127
-	MaxLengthContactInitials           int    = 50
-	MaxLengthContactFirstName          int    = 127
-	MaxLengthOpportunityName           int    = 80
-	MaxLengthOpportunityInsightlyState int    = 4000
-	DateTimeFormat                     string = "2006-01-02T15:04:05"
+	apiName string = "Ridder"
 )
 
-// type
-//
 type Service struct {
 	apiURL      string
 	apiKey      string
@@ -151,4 +132,20 @@ func (service *Service) parseInt32String(int32String string) (*int32, *errortool
 	_int32 := int32(_int64)
 
 	return &_int32, nil
+}
+
+func (service *Service) APIName() string {
+	return apiName
+}
+
+func (service *Service) APIKey() string {
+	return service.apiKey
+}
+
+func (service *Service) APICallCount() int64 {
+	return service.httpService.RequestCount()
+}
+
+func (service *Service) APIReset() {
+	service.httpService.ResetRequestCount()
 }
