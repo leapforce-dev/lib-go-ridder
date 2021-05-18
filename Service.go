@@ -1,7 +1,6 @@
 package ridder
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -9,7 +8,6 @@ import (
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
-	ig "github.com/leapforce-libraries/go_integration"
 )
 
 const (
@@ -61,13 +59,6 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 	// add error model
 	problemDetails := ProblemDetails{}
 	(*requestConfig).ErrorModel = &problemDetails
-
-	if ig.IsEnvironmentTest() {
-		if requestConfig.BodyModel != nil {
-			_b, _ := json.Marshal(requestConfig.BodyModel)
-			fmt.Println(string(_b))
-		}
-	}
 
 	request, response, e := service.httpService.HTTPRequest(httpMethod, requestConfig)
 	if problemDetails.Title != "" {
