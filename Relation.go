@@ -33,14 +33,11 @@ func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {
 		return nil
 	}
 
-	e := service.validateRelation(relation)
-	errortools.CaptureWarning(e)
-
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("relations"),
 		BodyModel: relation,
 	}
-	_, _, e = service.put(&requestConfig)
+	_, _, e := service.put(&requestConfig)
 	if e != nil {
 		return e
 	}
@@ -53,11 +50,6 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.
 		return nil, nil
 	}
 
-	e := service.validateRelation(relation)
-	if e != nil {
-		errortools.CaptureWarning(e)
-	}
-
 	var relationIDString string
 
 	requestConfig := go_http.RequestConfig{
@@ -65,7 +57,10 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.
 		BodyModel:     relation,
 		ResponseModel: &relationIDString,
 	}
-	_, _, e = service.post(&requestConfig)
+	_, _, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
 
 	relationIDInt64, err := strconv.ParseInt(relationIDString, 10, 64)
 	if err != nil {
@@ -84,38 +79,4 @@ func (service *Service) DeleteRelation(id int32) *errortools.Error {
 	_, _, e := service.delete(&requestConfig)
 
 	return e
-}
-
-func (service *Service) validateRelation(relation *Relation) *errortools.Error {
-	if relation == nil {
-		return nil
-	}
-	/*
-		errors := []string{}
-
-		service.truncateString("EmailAddress", &(*relation).EmailAddress, MaxLengthRelationEmail, &errors)
-		service.truncateString("RelationName", &(*relation).RelationName, MaxLengthRelationName, &errors)
-		service.truncateString("Phone", &(*relation).Phone, MaxLengthRelationPhone, &errors)
-		service.truncateString("Website", &(*relation).Website, MaxLengthRelationWebsite, &errors)
-
-		service.truncateString("BillingAddress-HouseNumber", &(*relation).BillingAddress.HouseNumber, MaxLengthAddressHouseNumber, &errors)
-		service.truncateString("BillingAddress-City", &(*relation).BillingAddress.City, MaxLengthAddressCity, &errors)
-		service.truncateString("BillingAddress-ZipCode", &(*relation).BillingAddress.ZipCode, MaxLengthAddressZipCode, &errors)
-		service.truncateString("BillingAddress-Street", &(*relation).BillingAddress.Street, MaxLengthAddressStreet, &errors)
-
-		service.truncateString("ShippingAddress-HouseNumber", &(*relation).ShippingAddress.HouseNumber, MaxLengthAddressHouseNumber, &errors)
-		service.truncateString("ShippingAddress-City", &(*relation).ShippingAddress.City, MaxLengthAddressCity, &errors)
-		service.truncateString("ShippingAddress-ZipCode", &(*relation).ShippingAddress.ZipCode, MaxLengthAddressZipCode, &errors)
-		service.truncateString("ShippingAddress-Street", &(*relation).ShippingAddress.Street, MaxLengthAddressStreet, &errors)
-
-		e := service.removeSpecialCharacters(&(*relation).RelationName)
-		if e != nil {
-			errors = append(errors, e.Message())
-		}
-
-		if len(errors) > 0 {
-			return errortools.ErrorMessage(strings.Join(errors, "\n"))
-		}*/
-
-	return nil
 }

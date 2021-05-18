@@ -24,34 +24,16 @@ type Contact struct {
 	Memo                *string `json:"Memo,omitempty"`
 }
 
-/*
-func (service *Service) GetContact(ridderID int32) (*Contact, *errortools.Error) {
-	contact := Contact{}
-
-	requestConfig := go_http.RequestConfig{
-		URL:           service.url(fmt.Sprintf("contacts?ridderid=%v", ridderID)),
-		ResponseModel: &contact,
-	}
-	_, _, e := service.get(&requestConfig)
-
-	return &contact, e
-}*/
-
 func (service *Service) UpdateContact(contact *Contact) *errortools.Error {
 	if contact == nil {
 		return nil
-	}
-
-	e := service.validateContact(contact)
-	if e != nil {
-		errortools.CaptureWarning(e)
 	}
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("contacts"),
 		BodyModel: contact,
 	}
-	_, _, e = service.put(&requestConfig)
+	_, _, e := service.put(&requestConfig)
 	if e != nil {
 		return e
 	}
@@ -64,11 +46,6 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Err
 		return nil, nil
 	}
 
-	e := service.validateContact(contact)
-	if e != nil {
-		errortools.CaptureWarning(e)
-	}
-
 	var contactIDString string
 
 	requestConfig := go_http.RequestConfig{
@@ -76,7 +53,10 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Err
 		BodyModel:     contact,
 		ResponseModel: &contactIDString,
 	}
-	_, _, e = service.post(&requestConfig)
+	_, _, e := service.post(&requestConfig)
+	if e != nil {
+		return nil, e
+	}
 
 	contactIDInt64, err := strconv.ParseInt(contactIDString, 10, 64)
 	if err != nil {
@@ -95,12 +75,4 @@ func (service *Service) DeleteContact(id int32) *errortools.Error {
 	_, _, e := service.delete(&requestConfig)
 
 	return e
-}
-
-func (service *Service) validateContact(contact *Contact) *errortools.Error {
-	if contact == nil {
-		return nil
-	}
-
-	return nil
 }
