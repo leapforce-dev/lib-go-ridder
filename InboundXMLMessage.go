@@ -3,6 +3,7 @@ package ridder
 import (
 	"encoding/base64"
 	"encoding/xml"
+	"net/http"
 	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -14,10 +15,10 @@ type inboundXMLMessage struct {
 	Base64EncodedXMLString string `json:"Base64EncodedXmlString"`
 }
 
-func (service *Service) SendXMLMessage(messageID string, object interface{}) (*int32, *errortools.Error) {
+func (service *Service) SendXMLMessage(messageID string, object interface{}) (*int32, *http.Response, *errortools.Error) {
 	b, err := xml.MarshalIndent(object, "", `   `)
 	if err != nil {
-		return nil, errortools.ErrorMessage(err)
+		return nil, nil, errortools.ErrorMessage(err)
 	}
 
 	// add xml header
@@ -36,21 +37,21 @@ func (service *Service) SendXMLMessage(messageID string, object interface{}) (*i
 		BodyModel:     message,
 		ResponseModel: &idString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, response, e := service.post(&requestConfig)
 	if e != nil {
-		return nil, e
+		return nil, response, e
 	}
 
 	var id *int32 = nil
 	if idString != "" {
 		idInt64, err := strconv.ParseInt(idString, 10, 32)
 		if err != nil {
-			return nil, errortools.ErrorMessage(err)
+			return nil, response, errortools.ErrorMessage(err)
 		}
 
 		idInt32 := int32(idInt64)
 		id = &idInt32
 	}
 
-	return id, nil
+	return id, response, nil
 }

@@ -1,6 +1,7 @@
 package ridder
 
 import (
+	"net/http"
 	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -24,26 +25,26 @@ type Contact struct {
 	Memo                *string `json:"Memo,omitempty"`
 }
 
-func (service *Service) UpdateContact(contact *Contact) *errortools.Error {
+func (service *Service) UpdateContact(contact *Contact) (*http.Response, *errortools.Error) {
 	if contact == nil {
-		return nil
+		return nil, nil
 	}
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("contacts"),
 		BodyModel: contact,
 	}
-	_, _, e := service.put(&requestConfig)
+	_, response, e := service.put(&requestConfig)
 	if e != nil {
-		return e
+		return response, e
 	}
 
-	return nil
+	return response, nil
 }
 
-func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Error) {
+func (service *Service) CreateContact(contact *Contact) (*int32, *http.Response, *errortools.Error) {
 	if contact == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var contactIDString string
@@ -53,18 +54,18 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *errortools.Err
 		BodyModel:     contact,
 		ResponseModel: &contactIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, response, e := service.post(&requestConfig)
 	if e != nil {
-		return nil, e
+		return nil, response, e
 	}
 
 	contactIDInt64, err := strconv.ParseInt(contactIDString, 10, 64)
 	if err != nil {
-		return nil, errortools.ErrorMessage(err)
+		return nil, response, errortools.ErrorMessage(err)
 	}
 	contactIDInt32 := int32(contactIDInt64)
 
-	return &contactIDInt32, e
+	return &contactIDInt32, response, e
 }
 
 func (service *Service) DeleteContact(id int32) *errortools.Error {

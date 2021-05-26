@@ -1,6 +1,7 @@
 package ridder
 
 import (
+	"net/http"
 	"strconv"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -28,26 +29,26 @@ type Relation struct {
 	VisitingAddress   *Address       `json:"VisitingAddress,omitempty"`
 }
 
-func (service *Service) UpdateRelation(relation *Relation) *errortools.Error {
+func (service *Service) UpdateRelation(relation *Relation) (*http.Response, *errortools.Error) {
 	if relation == nil {
-		return nil
+		return nil, nil
 	}
 
 	requestConfig := go_http.RequestConfig{
 		URL:       service.url("relations"),
 		BodyModel: relation,
 	}
-	_, _, e := service.put(&requestConfig)
+	_, response, e := service.put(&requestConfig)
 	if e != nil {
-		return e
+		return response, e
 	}
 
-	return nil
+	return response, nil
 }
 
-func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.Error) {
+func (service *Service) CreateRelation(relation *Relation) (*int32, *http.Response, *errortools.Error) {
 	if relation == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var relationIDString string
@@ -57,18 +58,18 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *errortools.
 		BodyModel:     relation,
 		ResponseModel: &relationIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, response, e := service.post(&requestConfig)
 	if e != nil {
-		return nil, e
+		return nil, response, e
 	}
 
 	relationIDInt64, err := strconv.ParseInt(relationIDString, 10, 64)
 	if err != nil {
-		return nil, errortools.ErrorMessage(err)
+		return nil, response, errortools.ErrorMessage(err)
 	}
 	relationIDInt32 := int32(relationIDInt64)
 
-	return &relationIDInt32, e
+	return &relationIDInt32, response, e
 }
 
 func (service *Service) DeleteRelation(id int32) *errortools.Error {
