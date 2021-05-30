@@ -11,16 +11,16 @@ import (
 type Contact struct {
 	ID                  int32   `json:"Id"`
 	RelationID          int32   `json:"RelationId"`
-	ExternalCRMID       string  `json:"ExternalCrmId"`
+	ExternalCRMID       string  `json:"ExternalCrmId" max:"50"`
 	Person              Person  `json:"Person"`
-	Email               *string `json:"Email,omitempty"`
-	Fax                 *string `json:"Fax,omitempty"`
-	BusinessPhone1      *string `json:"BusinessPhone1,omitempty"`
-	BusinessPhone2      *string `json:"BusinessPhone2,omitempty"`
-	BusinessMobilePhone *string `json:"BusinessMobilePhone,omitempty"`
-	PrivatePhone1       *string `json:"PrivatePhone1,omitempty"`
-	PrivatePhone2       *string `json:"PrivatePhone2,omitempty"`
-	PrivateMobilePhone  *string `json:"PrivateMobilePhone,omitempty"`
+	Email               *string `json:"Email,omitempty" max:"255"`
+	Fax                 *string `json:"Fax,omitempty" max:"50"`
+	BusinessPhone1      *string `json:"BusinessPhone1,omitempty" max:"50"`
+	BusinessPhone2      *string `json:"BusinessPhone2,omitempty" max:"50"`
+	BusinessMobilePhone *string `json:"BusinessMobilePhone,omitempty" max:"50"`
+	PrivatePhone1       *string `json:"PrivatePhone1,omitempty" max:"50"`
+	PrivatePhone2       *string `json:"PrivatePhone2,omitempty" max:"50"`
+	PrivateMobilePhone  *string `json:"PrivateMobilePhone,omitempty" max:"50"`
 	PositionID          *int32  `json:"PositionId,omitempty"`
 	Memo                *string `json:"Memo,omitempty"`
 }

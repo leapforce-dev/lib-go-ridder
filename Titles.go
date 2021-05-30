@@ -9,9 +9,9 @@ import (
 
 type Title struct {
 	ID          int32   `json:"Id"`
-	Code        string  `json:"Code"`
-	Description *string `json:"Description"`
-	Salutation  *string `json:"Salutation"`
+	Code        string  `json:"Code" max:"10"`
+	Description *string `json:"Description" max:"80"`
+	Salutation  *string `json:"Salutation" max:"50"`
 }
 
 func (service *Service) GetTitles() (*[]Title, *errortools.Error) {

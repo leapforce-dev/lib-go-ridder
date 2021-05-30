@@ -9,8 +9,8 @@ import (
 
 type Position struct {
 	ID          int32   `json:"Id"`
-	Code        string  `json:"Code"`
-	Description *string `json:"Description"`
+	Code        string  `json:"Code" max:"50"`
+	Description *string `json:"Description" max:"80"`
 }
 
 func (service *Service) GetPositions() (*[]Position, *errortools.Error) {

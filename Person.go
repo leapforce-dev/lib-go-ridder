@@ -5,10 +5,10 @@ import (
 )
 
 type Person struct {
-	Initials       *string             `json:"Initials,omitempty"`
-	FirstName      string              `json:"FirstName"`
-	LastNamePrefix *string             `json:"LastNamePrefix,omitempty"`
-	LastName       string              `json:"LastName"`
+	Initials       *string             `json:"Initials,omitempty" max:"50"`
+	FirstName      string              `json:"FirstName" max:"127"`
+	LastNamePrefix *string             `json:"LastNamePrefix,omitempty" max:"50"`
+	LastName       string              `json:"LastName" max:"127"`
 	Gender         Gender              `json:"Gender"`
 	TitleID        *int32              `json:"TitleId,omitempty"`
 	DateOfBirth    *r_types.DateString `json:"DateOfBirth,omitempty"`

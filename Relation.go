@@ -10,20 +10,20 @@ import (
 
 type Relation struct {
 	ID                int32          `json:"Id"`
-	ExternalCRMID     string         `json:"ExternalCrmId"`
-	Name              string         `json:"Name"`
-	Code              *string        `json:"Code,omitempty"`
-	CurrencyISOCode   string         `json:"CurrencyIsoCode"`
+	ExternalCRMID     string         `json:"ExternalCrmId" max:"50"`
+	Name              string         `json:"Name" max:"60"`
+	Code              *string        `json:"Code,omitempty" max:"10"`
+	CurrencyISOCode   string         `json:"CurrencyIsoCode" max:"3"`
 	LanguageISOCode   string         `json:"LanguageIsoCode"`
 	LanguageISOFormat LanguageFormat `json:"LanguageIsoFormat"`
-	SalesPersonID     *string        `json:"SalesPersonId,omitempty"`
+	SalesPersonID     *string        `json:"SalesPersonId,omitempty" max:"50"`
 	RelationTypeCode  *string        `json:"RelationTypeCode,omitempty"`
 	IndustryCode      *string        `json:"IndustryCode,omitempty"`
-	Phone1            *string        `json:"Phone1,omitempty"`
-	Phone2            *string        `json:"Phone2,omitempty"`
-	Fax               *string        `json:"Fax,omitempty"`
-	Email             *string        `json:"Email,omitempty"`
-	Website           *string        `json:"Website,omitempty"`
+	Phone1            *string        `json:"Phone1,omitempty" max:"50"`
+	Phone2            *string        `json:"Phone2,omitempty" max:"50"`
+	Fax               *string        `json:"Fax,omitempty" max:"50"`
+	Email             *string        `json:"Email,omitempty" max:"255"`
+	Website           *string        `json:"Website,omitempty" max:"255"`
 	Memo              *string        `json:"Memo,omitempty"`
 	PostalAddress     *Address       `json:"PostalAddress,omitempty"`
 	VisitingAddress   *Address       `json:"VisitingAddress,omitempty"`

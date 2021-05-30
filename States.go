@@ -9,8 +9,8 @@ import (
 
 type State struct {
 	ID          int32   `json:"Id"`
-	Code        string  `json:"Code"`
-	Description *string `json:"Description"`
+	Code        string  `json:"Code" max:"10"`
+	Description *string `json:"Description" max:"80"`
 	CountryID   int32   `json:"CountryId"`
 }
 
