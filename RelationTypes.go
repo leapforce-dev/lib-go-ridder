@@ -9,7 +9,7 @@ import (
 
 type RelationType struct {
 	ID          int32   `json:"Id"`
-	Code        string  `json:"Code" max:"10"`
+	Code        string  `json:"Code" max:"3"`
 	Description *string `json:"Description" max:"80"`
 }
 
