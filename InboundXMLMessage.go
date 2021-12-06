@@ -33,11 +33,12 @@ func (service *Service) SendXMLMessage(messageID string, object interface{}) (*i
 
 	var idString string
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("inboundxmlmessage"),
 		BodyModel:     message,
 		ResponseModel: &idString,
 	}
-	_, response, e := service.post(&requestConfig)
+	_, response, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, response, e
 	}

@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -18,10 +19,11 @@ func (service *Service) GetStates() (*[]State, *errortools.Error) {
 	var states []State
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url("states"),
 		ResponseModel: &states,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -41,10 +43,11 @@ func (service *Service) getState(urlPath string) (*State, *errortools.Error) {
 	var state State
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(urlPath),
 		ResponseModel: &state,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -60,11 +63,12 @@ func (service *Service) CreateState(state *State) (*int32, *errortools.Error) {
 	var stateIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("states"),
 		BodyModel:     state,
 		ResponseModel: &stateIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

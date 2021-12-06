@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -17,10 +18,11 @@ func (service *Service) GetIndustries() (*[]Industry, *errortools.Error) {
 	var industries []Industry
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url("industries"),
 		ResponseModel: &industries,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -40,10 +42,11 @@ func (service *Service) getIndustry(urlPath string) (*Industry, *errortools.Erro
 	var industry Industry
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(urlPath),
 		ResponseModel: &industry,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -59,11 +62,12 @@ func (service *Service) CreateIndustry(industry *Industry) (*int32, *errortools.
 	var industryIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("industries"),
 		BodyModel:     industry,
 		ResponseModel: &industryIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

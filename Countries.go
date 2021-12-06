@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
@@ -24,10 +25,11 @@ func (service *Service) GetCountry(countryFormat CountryFormat, countryCode stri
 	var countryIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(fmt.Sprintf("countries?%s", params.Encode())),
 		ResponseModel: &countryIDString,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

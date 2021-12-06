@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -17,10 +18,11 @@ func (service *Service) GetRelationTypes() (*[]RelationType, *errortools.Error) 
 	var relationTypes []RelationType
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url("relationTypes"),
 		ResponseModel: &relationTypes,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -40,10 +42,11 @@ func (service *Service) getRelationType(urlPath string) (*RelationType, *errorto
 	var relationType RelationType
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(urlPath),
 		ResponseModel: &relationType,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -59,11 +62,12 @@ func (service *Service) CreateRelationType(relationType *RelationType) (*int32, 
 	var relationTypeIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("relationTypes"),
 		BodyModel:     relationType,
 		ResponseModel: &relationTypeIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

@@ -52,7 +52,7 @@ func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 	}, nil
 }
 
-func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
+func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
 	// add api key header
 	header := http.Header{}
 	header.Set("X-ApiKey", service.apiKey)
@@ -67,7 +67,7 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 		service.truncateStrings(requestConfig.BodyModel)
 	}
 
-	request, response, e := service.httpService.HTTPRequest(httpMethod, requestConfig)
+	request, response, e := service.httpService.HTTPRequest(requestConfig)
 	if problemDetails.Title != "" {
 		e.SetMessage(problemDetails.Title)
 	}
@@ -77,22 +77,6 @@ func (service *Service) httpRequest(httpMethod string, requestConfig *go_http.Re
 
 func (service *Service) url(path string) string {
 	return fmt.Sprintf("%s/%s", service.apiURL, path)
-}
-
-func (service *Service) get(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodGet, requestConfig)
-}
-
-func (service *Service) post(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPost, requestConfig)
-}
-
-func (service *Service) put(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodPut, requestConfig)
-}
-
-func (service *Service) delete(requestConfig *go_http.RequestConfig) (*http.Request, *http.Response, *errortools.Error) {
-	return service.httpRequest(http.MethodDelete, requestConfig)
 }
 
 func (service *Service) truncateStrings(model interface{}) *errortools.Error {
@@ -173,8 +157,6 @@ func (service *Service) truncateStringsValue(structType reflect.Type, value refl
 
 				*errors = append(*errors, fmt.Sprintf("%s truncated to %v characters.", fieldName, maxLength))
 			}
-
-			break
 		case "*string":
 			if !field.IsNil() {
 				_value := field.Elem().String()
@@ -184,11 +166,8 @@ func (service *Service) truncateStringsValue(structType reflect.Type, value refl
 					*errors = append(*errors, fmt.Sprintf("%s truncated to %v characters.", fieldName, maxLength))
 				}
 			}
-
-			break
 		default:
 			errortools.CaptureError("Field is not a (pointer to a) string")
-			break
 		}
 	}
 

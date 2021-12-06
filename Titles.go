@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -18,10 +19,11 @@ func (service *Service) GetTitles() (*[]Title, *errortools.Error) {
 	var titles []Title
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url("titles"),
 		ResponseModel: &titles,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -41,10 +43,11 @@ func (service *Service) getTitle(urlPath string) (*Title, *errortools.Error) {
 	var title Title
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(urlPath),
 		ResponseModel: &title,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -60,11 +63,12 @@ func (service *Service) CreateTitle(title *Title) (*int32, *errortools.Error) {
 	var titleIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("titles"),
 		BodyModel:     title,
 		ResponseModel: &titleIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}

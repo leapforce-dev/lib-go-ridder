@@ -2,6 +2,7 @@ package ridder
 
 import (
 	"fmt"
+	"net/http"
 
 	errortools "github.com/leapforce-libraries/go_errortools"
 	go_http "github.com/leapforce-libraries/go_http"
@@ -17,10 +18,11 @@ func (service *Service) GetPositions() (*[]Position, *errortools.Error) {
 	var positions []Position
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url("positions"),
 		ResponseModel: &positions,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -40,10 +42,11 @@ func (service *Service) getPosition(urlPath string) (*Position, *errortools.Erro
 	var position Position
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodGet,
 		URL:           service.url(urlPath),
 		ResponseModel: &position,
 	}
-	_, _, e := service.get(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
@@ -59,11 +62,12 @@ func (service *Service) CreatePosition(position *Position) (*int32, *errortools.
 	var positionIDString string
 
 	requestConfig := go_http.RequestConfig{
+		Method:        http.MethodPost,
 		URL:           service.url("positions"),
 		BodyModel:     position,
 		ResponseModel: &positionIDString,
 	}
-	_, _, e := service.post(&requestConfig)
+	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
