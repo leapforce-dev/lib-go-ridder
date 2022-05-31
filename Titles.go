@@ -20,7 +20,7 @@ func (service *Service) GetTitles() (*[]Title, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("titles"),
+		Url:           service.url("titles"),
 		ResponseModel: &titles,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -44,7 +44,7 @@ func (service *Service) getTitle(urlPath string) (*Title, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(urlPath),
+		Url:           service.url(urlPath),
 		ResponseModel: &title,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -64,7 +64,7 @@ func (service *Service) CreateTitle(title *Title) (*int32, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("titles"),
+		Url:           service.url("titles"),
 		BodyModel:     title,
 		ResponseModel: &titleIDString,
 	}

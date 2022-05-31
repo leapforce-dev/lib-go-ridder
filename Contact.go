@@ -32,7 +32,7 @@ func (service *Service) UpdateContact(contact *Contact) (*http.Response, *errort
 
 	requestConfig := go_http.RequestConfig{
 		Method:    http.MethodPut,
-		URL:       service.url("contacts"),
+		Url:       service.url("contacts"),
 		BodyModel: contact,
 	}
 	_, response, e := service.httpRequest(&requestConfig)
@@ -52,7 +52,7 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *http.Response,
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("contacts"),
+		Url:           service.url("contacts"),
 		BodyModel:     contact,
 		ResponseModel: &contactIDString,
 	}
@@ -73,7 +73,7 @@ func (service *Service) CreateContact(contact *Contact) (*int32, *http.Response,
 func (service *Service) DeleteContact(id int32) *errortools.Error {
 	requestConfig := go_http.RequestConfig{
 		Method:    http.MethodDelete,
-		URL:       service.url("contacts"),
+		Url:       service.url("contacts"),
 		BodyModel: id,
 	}
 	_, _, e := service.httpRequest(&requestConfig)

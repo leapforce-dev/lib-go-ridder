@@ -25,7 +25,7 @@ func (service *Service) GetLanguage(languageFormat LanguageFormat, languageCode 
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(fmt.Sprintf("languages?%s", params.Encode())),
+		Url:           service.url(fmt.Sprintf("languages?%s", params.Encode())),
 		ResponseModel: &languageIDString,
 	}
 	_, _, e := service.httpRequest(&requestConfig)

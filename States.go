@@ -20,7 +20,7 @@ func (service *Service) GetStates() (*[]State, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("states"),
+		Url:           service.url("states"),
 		ResponseModel: &states,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -44,7 +44,7 @@ func (service *Service) getState(urlPath string) (*State, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(urlPath),
+		Url:           service.url(urlPath),
 		ResponseModel: &state,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -64,7 +64,7 @@ func (service *Service) CreateState(state *State) (*int32, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("states"),
+		Url:           service.url("states"),
 		BodyModel:     state,
 		ResponseModel: &stateIDString,
 	}

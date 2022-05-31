@@ -10,12 +10,12 @@ import (
 	go_http "github.com/leapforce-libraries/go_http"
 )
 
-type inboundXMLMessage struct {
+type inboundXmlMessage struct {
 	MessageID              string `json:"MessageId"`
-	Base64EncodedXMLString string `json:"Base64EncodedXmlString"`
+	Base64EncodedXmlString string `json:"Base64EncodedXmlString"`
 }
 
-func (service *Service) SendXMLMessage(messageID string, object interface{}) (*int32, *http.Response, *errortools.Error) {
+func (service *Service) SendXmlMessage(messageID string, object interface{}) (*int32, *http.Response, *errortools.Error) {
 	b, err := xml.MarshalIndent(object, "", `   `)
 	if err != nil {
 		return nil, nil, errortools.ErrorMessage(err)
@@ -24,17 +24,17 @@ func (service *Service) SendXMLMessage(messageID string, object interface{}) (*i
 	// add xml header
 	b = []byte(xml.Header + string(b))
 
-	base64encodedXMLString := base64.StdEncoding.EncodeToString(b)
+	base64encodedXmlString := base64.StdEncoding.EncodeToString(b)
 
-	message := inboundXMLMessage{
+	message := inboundXmlMessage{
 		MessageID:              messageID,
-		Base64EncodedXMLString: base64encodedXMLString,
+		Base64EncodedXmlString: base64encodedXmlString,
 	}
 
 	var idString string
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("inboundxmlmessage"),
+		Url:           service.url("inboundxmlmessage"),
 		BodyModel:     message,
 		ResponseModel: &idString,
 	}

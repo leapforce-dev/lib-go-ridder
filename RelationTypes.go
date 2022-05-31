@@ -19,7 +19,7 @@ func (service *Service) GetRelationTypes() (*[]RelationType, *errortools.Error) 
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("relationTypes"),
+		Url:           service.url("relationTypes"),
 		ResponseModel: &relationTypes,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -43,7 +43,7 @@ func (service *Service) getRelationType(urlPath string) (*RelationType, *errorto
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(urlPath),
+		Url:           service.url(urlPath),
 		ResponseModel: &relationType,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -63,7 +63,7 @@ func (service *Service) CreateRelationType(relationType *RelationType) (*int32, 
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("relationTypes"),
+		Url:           service.url("relationTypes"),
 		BodyModel:     relationType,
 		ResponseModel: &relationTypeIDString,
 	}

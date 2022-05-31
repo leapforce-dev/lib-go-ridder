@@ -19,7 +19,7 @@ func (service *Service) GetIndustries() (*[]Industry, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("industries"),
+		Url:           service.url("industries"),
 		ResponseModel: &industries,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -43,7 +43,7 @@ func (service *Service) getIndustry(urlPath string) (*Industry, *errortools.Erro
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(urlPath),
+		Url:           service.url(urlPath),
 		ResponseModel: &industry,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -63,7 +63,7 @@ func (service *Service) CreateIndustry(industry *Industry) (*int32, *errortools.
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("industries"),
+		Url:           service.url("industries"),
 		BodyModel:     industry,
 		ResponseModel: &industryIDString,
 	}

@@ -26,7 +26,7 @@ func (service *Service) GetCountry(countryFormat CountryFormat, countryCode stri
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(fmt.Sprintf("countries?%s", params.Encode())),
+		Url:           service.url(fmt.Sprintf("countries?%s", params.Encode())),
 		ResponseModel: &countryIDString,
 	}
 	_, _, e := service.httpRequest(&requestConfig)

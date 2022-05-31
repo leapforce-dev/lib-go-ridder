@@ -19,7 +19,7 @@ func (service *Service) GetPositions() (*[]Position, *errortools.Error) {
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url("positions"),
+		Url:           service.url("positions"),
 		ResponseModel: &positions,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -43,7 +43,7 @@ func (service *Service) getPosition(urlPath string) (*Position, *errortools.Erro
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		URL:           service.url(urlPath),
+		Url:           service.url(urlPath),
 		ResponseModel: &position,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
@@ -63,7 +63,7 @@ func (service *Service) CreatePosition(position *Position) (*int32, *errortools.
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("positions"),
+		Url:           service.url("positions"),
 		BodyModel:     position,
 		ResponseModel: &positionIDString,
 	}

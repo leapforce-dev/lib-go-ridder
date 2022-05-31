@@ -36,7 +36,7 @@ func (service *Service) UpdateRelation(relation *Relation) (*http.Response, *err
 
 	requestConfig := go_http.RequestConfig{
 		Method:    http.MethodPut,
-		URL:       service.url("relations"),
+		Url:       service.url("relations"),
 		BodyModel: relation,
 	}
 	_, response, e := service.httpRequest(&requestConfig)
@@ -56,7 +56,7 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *http.Respon
 
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodPost,
-		URL:           service.url("relations"),
+		Url:           service.url("relations"),
 		BodyModel:     relation,
 		ResponseModel: &relationIDString,
 	}
@@ -77,7 +77,7 @@ func (service *Service) CreateRelation(relation *Relation) (*int32, *http.Respon
 func (service *Service) DeleteRelation(id int32) *errortools.Error {
 	requestConfig := go_http.RequestConfig{
 		Method:    http.MethodDelete,
-		URL:       service.url("relations"),
+		Url:       service.url("relations"),
 		BodyModel: id,
 	}
 	_, _, e := service.httpRequest(&requestConfig)

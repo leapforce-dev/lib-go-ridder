@@ -17,14 +17,14 @@ const (
 )
 
 type Service struct {
-	apiURL      string
+	apiUrl      string
 	apiKey      string
 	httpService *go_http.Service
 }
 
 type ServiceConfig struct {
-	APIURL string
-	APIKey string
+	ApiUrl string
+	ApiKey string
 }
 
 func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
@@ -32,12 +32,12 @@ func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 		return nil, errortools.ErrorMessage("ServiceConfig must not be a nil pointer")
 	}
 
-	if config.APIURL == "" {
-		return nil, errortools.ErrorMessage("Service API URL not provided")
+	if config.ApiUrl == "" {
+		return nil, errortools.ErrorMessage("Service Api Url not provided")
 	}
 
-	if config.APIKey == "" {
-		return nil, errortools.ErrorMessage("Service API Key not provided")
+	if config.ApiKey == "" {
+		return nil, errortools.ErrorMessage("Service Api Key not provided")
 	}
 
 	httpService, e := go_http.NewService(&go_http.ServiceConfig{})
@@ -46,8 +46,8 @@ func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 	}
 
 	return &Service{
-		apiURL:      config.APIURL,
-		apiKey:      config.APIKey,
+		apiUrl:      config.ApiUrl,
+		apiKey:      config.ApiKey,
 		httpService: httpService,
 	}, nil
 }
@@ -67,7 +67,7 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 		service.truncateStrings(requestConfig.BodyModel)
 	}
 
-	request, response, e := service.httpService.HTTPRequest(requestConfig)
+	request, response, e := service.httpService.HttpRequest(requestConfig)
 	if problemDetails.Title != "" {
 		e.SetMessage(problemDetails.Title)
 	}
@@ -76,7 +76,7 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 }
 
 func (service *Service) url(path string) string {
-	return fmt.Sprintf("%s/%s", service.apiURL, path)
+	return fmt.Sprintf("%s/%s", service.apiUrl, path)
 }
 
 func (service *Service) truncateStrings(model interface{}) *errortools.Error {
@@ -204,18 +204,18 @@ func (service *Service) parseInt32String(int32String string) (*int32, *errortool
 	return &_int32, nil
 }
 
-func (service *Service) APIName() string {
+func (service *Service) ApiName() string {
 	return apiName
 }
 
-func (service *Service) APIKey() string {
+func (service *Service) ApiKey() string {
 	return service.apiKey
 }
 
-func (service *Service) APICallCount() int64 {
+func (service *Service) ApiCallCount() int64 {
 	return service.httpService.RequestCount()
 }
 
-func (service *Service) APIReset() {
+func (service *Service) ApiReset() {
 	service.httpService.ResetRequestCount()
 }
