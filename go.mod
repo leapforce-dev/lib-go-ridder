@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.107.0
 	github.com/leapforce-libraries/go_errortools v0.0.0-20220808170134-6bf8d8106f1b
 	github.com/leapforce-libraries/go_http v0.0.0-20220808204824-8a0e0bdcdfd1
-	github.com/leapforce-libraries/go_utilities v0.0.0-20221114154429-e4f32811c2fb
+	github.com/leapforce-libraries/go_utilities v0.0.0-20221126190135-267e6d1d72bf
 )
 
 require (
@@ -28,9 +28,9 @@ require (
 	github.com/leapforce-libraries/go_integration v0.0.0-20220801142518-7b4fe1b429bb // indirect
 	github.com/leapforce-libraries/go_types v0.0.0-20220220161618-e9b1045c3ef2 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.102.0 // indirect

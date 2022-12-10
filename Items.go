@@ -69,20 +69,66 @@ type Item struct {
 }
 
 func (service *Service) GetItems(itemGroupId int32) (*[]Item, *errortools.Error) {
+	var limit int32 = 100
+	var maxId int32 = 3355
+
 	var values = url.Values{}
-	values.Set("filter", fmt.Sprintf("FK_ITEMGROUP=%v", itemGroupId))
+	values.Set("limit", fmt.Sprintf("%v", limit))
+	values.Set("sortBy", "PK_R_ITEM")
 
 	var items []Item
 
+	for {
+		// filter at >= because when using > we get a 404 Not Found when all items have been retrieved
+		values.Set("filter", fmt.Sprintf("FK_ITEMGROUP=%v AND PK_R_ITEM>=%v", itemGroupId, maxId))
+
+		var items_ []Item
+
+		requestConfig := go_http.RequestConfig{
+			Method:        http.MethodGet,
+			Url:           service.url(fmt.Sprintf("items/limit?%s", values.Encode())),
+			ResponseModel: &items_,
+		}
+		fmt.Println(requestConfig.Url)
+		_, _, e := service.httpRequest(&requestConfig)
+		if e != nil {
+			return nil, e
+		}
+
+		if len(items_) == 0 {
+			break
+		}
+
+		if maxId > 0 {
+			// ignore first item because we filter on >= instead of >
+			if len(items_) == 1 {
+				break
+			}
+			items_ = items_[1:]
+		}
+
+		items = append(items, items_...)
+
+		maxId = items_[len(items_)-1].Id
+
+		break
+	}
+
+	return &items, nil
+}
+
+func (service *Service) GetItem(itemId int32) (*Item, *errortools.Error) {
+	var item Item
+
 	requestConfig := go_http.RequestConfig{
 		Method:        http.MethodGet,
-		Url:           service.url(fmt.Sprintf("items?%s", values.Encode())),
-		ResponseModel: &items,
+		Url:           service.url(fmt.Sprintf("items/id/%v", itemId)),
+		ResponseModel: &item,
 	}
 	_, _, e := service.httpRequest(&requestConfig)
 	if e != nil {
 		return nil, e
 	}
 
-	return &items, nil
+	return &item, nil
 }
