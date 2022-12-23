@@ -70,7 +70,7 @@ type Item struct {
 
 func (service *Service) GetItems(itemGroupId int32) (*[]Item, *errortools.Error) {
 	var limit int32 = 100
-	var maxId int32 = 3355
+	var maxId int32 = 0
 
 	var values = url.Values{}
 	values.Set("limit", fmt.Sprintf("%v", limit))
@@ -89,7 +89,6 @@ func (service *Service) GetItems(itemGroupId int32) (*[]Item, *errortools.Error)
 			Url:           service.url(fmt.Sprintf("items/limit?%s", values.Encode())),
 			ResponseModel: &items_,
 		}
-		fmt.Println(requestConfig.Url)
 		_, _, e := service.httpRequest(&requestConfig)
 		if e != nil {
 			return nil, e

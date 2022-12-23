@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.107.0
 	github.com/leapforce-libraries/go_errortools v0.0.0-20220808170134-6bf8d8106f1b
 	github.com/leapforce-libraries/go_http v0.0.0-20220808204824-8a0e0bdcdfd1
-	github.com/leapforce-libraries/go_utilities v0.0.0-20221126190135-267e6d1d72bf
+	github.com/leapforce-libraries/go_utilities v0.0.0-20221202090301-ca2b5b24ae83
 )
 
 require (
