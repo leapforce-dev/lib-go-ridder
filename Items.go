@@ -109,8 +109,6 @@ func (service *Service) GetItems(itemGroupId int32) (*[]Item, *errortools.Error)
 		items = append(items, items_...)
 
 		maxId = items_[len(items_)-1].Id
-
-		break
 	}
 
 	return &items, nil
