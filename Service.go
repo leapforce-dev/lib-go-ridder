@@ -2,14 +2,13 @@ package ridder
 
 import (
 	"fmt"
+	errortools "github.com/leapforce-libraries/go_errortools"
+	go_http "github.com/leapforce-libraries/go_http"
+	utilities "github.com/leapforce-libraries/go_utilities"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
-
-	errortools "github.com/leapforce-libraries/go_errortools"
-	go_http "github.com/leapforce-libraries/go_http"
-	utilities "github.com/leapforce-libraries/go_utilities"
 )
 
 const (
