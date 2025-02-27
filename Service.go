@@ -22,8 +22,9 @@ type Service struct {
 }
 
 type ServiceConfig struct {
-	ApiUrl string
-	ApiKey string
+	ApiUrl   string
+	ApiKey   string
+	ProxyUrl *string
 }
 
 func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
@@ -39,7 +40,9 @@ func NewService(config *ServiceConfig) (*Service, *errortools.Error) {
 		return nil, errortools.ErrorMessage("Service Api Key not provided")
 	}
 
-	httpService, e := go_http.NewService(&go_http.ServiceConfig{})
+	httpService, e := go_http.NewService(&go_http.ServiceConfig{
+		ProxyUrl: config.ProxyUrl,
+	})
 	if e != nil {
 		return nil, e
 	}
