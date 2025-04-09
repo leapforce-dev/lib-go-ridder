@@ -9,10 +9,12 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
-	apiName string = "Ridder"
+	apiName     string = "Ridder"
+	maxAttempts int    = 3
 )
 
 type Service struct {
@@ -69,12 +71,26 @@ func (service *Service) httpRequest(requestConfig *go_http.RequestConfig) (*http
 		service.truncateStrings(requestConfig.BodyModel)
 	}
 
-	request, response, e := service.httpService.HttpRequest(requestConfig)
-	if problemDetails.Title != "" {
-		e.SetMessage(problemDetails.Title)
-	}
+	attempt := 1
 
-	return request, response, e
+	for {
+		request, response, e := service.httpService.HttpRequest(requestConfig)
+		if e == nil {
+			return request, response, nil
+		}
+		if attempt < maxAttempts {
+			attempt++
+			time.Sleep(100 * time.Second)
+			fmt.Printf("Starting attempt %d of %d for %s\n", attempt, maxAttempts, requestConfig.Url)
+			continue
+		}
+
+		if problemDetails.Title != "" {
+			e.SetMessage(problemDetails.Title)
+		}
+
+		return request, response, e
+	}
 }
 
 func (service *Service) url(path string) string {
